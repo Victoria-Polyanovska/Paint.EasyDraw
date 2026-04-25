@@ -649,6 +649,7 @@
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "EasyDraw";
+            Load += Form1_Load;
             panel1.ResumeLayout(false);
             panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)color_picker).EndInit();

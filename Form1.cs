@@ -16,5 +16,15 @@ namespace paint
         {
 
         }
+        public void LoadImage(string path)
+        {
+            this.BackgroundImage = Image.FromFile(path);
+            this.BackgroundImageLayout = ImageLayout.Zoom;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
