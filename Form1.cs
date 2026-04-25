@@ -11,5 +11,10 @@ namespace paint
         {
 
         }
+
+        private void btn_redo_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
