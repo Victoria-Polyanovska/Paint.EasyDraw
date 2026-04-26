@@ -55,5 +55,50 @@ namespace paint
             startForm.Show();
             this.Close();
         }
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            p.Width = trackBar1.Value;
+            erase.Width = trackBar1.Value;
+        }
+        private void pic_MouseDown(object sender, MouseEventArgs e)
+        {
+            paint = true;
+            py = e.Location;
+        }
+
+        private void pic_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (paint)
+            {
+                if (index == 1)
+                {
+                    px = e.Location;
+                    g.DrawLine(p, px, py);
+                    py = px;
+                }
+                if (index == 2)
+                {
+                    px = e.Location;
+                    g.DrawLine(erase, px, py);
+                    py = px;
+                }
+            }
+            pic.Refresh();
+        }
+
+        private void pic_MouseUp(object sender, MouseEventArgs e)
+        {
+            paint = false;
+        }
+
+        private void btn_pencil_Click(object sender, EventArgs e)
+        {
+            index = 1;
+        }
+
+        private void btn_eraser_Click(object sender, EventArgs e)
+        {
+            index = 2;
+        }
     }
 }
