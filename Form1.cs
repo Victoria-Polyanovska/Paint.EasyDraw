@@ -1,3 +1,5 @@
+using paint.ToolsLibrary;
+
 namespace paint
 {
     public partial class Form1 : Form
@@ -25,6 +27,7 @@ namespace paint
         Pen p = new Pen(Color.Black, 1);
         Pen erase = new Pen(Color.White, 10);
         int index;
+        int x, y, sX, sY, cX, cY;
 
         ColorDialog cd = new ColorDialog();
         Color new_color;
@@ -64,6 +67,10 @@ namespace paint
         {
             paint = true;
             py = e.Location;
+
+            cX = e.X;
+            cY = e.Y;
+
         }
 
         private void pic_MouseMove(object sender, MouseEventArgs e)
@@ -89,6 +96,8 @@ namespace paint
         private void pic_MouseUp(object sender, MouseEventArgs e)
         {
             paint = false;
+            sX = e.X - cX; // Ширина
+            sY = e.Y - cY; // Висота 
         }
 
         private void btn_pencil_Click(object sender, EventArgs e)

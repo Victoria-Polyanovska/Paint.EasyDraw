@@ -129,6 +129,7 @@
             btn_back.Text = "Back to menu";
             btn_back.TextAlign = ContentAlignment.TopCenter;
             btn_back.UseVisualStyleBackColor = false;
+            btn_back.Click += btn_back_Click;
             // 
             // btn_layers
             // 
@@ -322,6 +323,7 @@
             btn_pencil.TabIndex = 4;
             btn_pencil.TextAlign = ContentAlignment.BottomCenter;
             btn_pencil.UseVisualStyleBackColor = false;
+            btn_pencil.Click += btn_pencil_Click;
             // 
             // btn_eraser
             // 
@@ -338,6 +340,7 @@
             btn_eraser.TabIndex = 5;
             btn_eraser.TextAlign = ContentAlignment.BottomCenter;
             btn_eraser.UseVisualStyleBackColor = false;
+            btn_eraser.Click += btn_eraser_Click;
             // 
             // panel2
             // 
@@ -435,6 +438,9 @@
             pic.TabIndex = 2;
             pic.TabStop = false;
             pic.Click += pic_Click;
+            pic.MouseDown += pic_MouseDown;
+            pic.MouseMove += pic_MouseMove;
+            pic.MouseUp += pic_MouseUp;
             // 
             // trackBar1
             // 
