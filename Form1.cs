@@ -98,6 +98,42 @@ namespace paint
             paint = false;
             sX = e.X - cX; // Ширина
             sY = e.Y - cY; // Висота 
+
+            ToolsLibrary.Shape shape = null;
+
+            if (index == 3)
+            {
+                shape = new EllipseShape(
+                    new Rectangle(Math.Min(cX, cX + sX), Math.Min(cY, cY + sY), Math.Abs(sX), Math.Abs(sY)), p.Color, p.Width);
+            }
+            else if (index == 4)
+            {
+                shape = new RectangleShape(
+                    new Point(cX, cY),
+                    new Point(cX + sX, cY + sY), p.Color, p.Width);
+            }
+            else if (index == 5)
+            {
+                shape = new LineShape(
+                    new Point(cX, cY),
+                    new Point(e.X, e.Y), p.Color, p.Width);
+            }
+            else if (index == 6)
+            {
+                shape = new TriangleShape(
+                    new Point(cX, cY),
+                    new Point(e.X, e.Y), p.Color, p.Width);
+            }
+
+            if (shape != null)
+            {
+                using (Graphics gBm = Graphics.FromImage(bm))
+                {
+                    shape.Draw(gBm);
+                }
+                pic.Image = bm;
+                pic.Refresh();
+            }
         }
 
         private void btn_pencil_Click(object sender, EventArgs e)
@@ -108,6 +144,26 @@ namespace paint
         private void btn_eraser_Click(object sender, EventArgs e)
         {
             index = 2;
+        }
+
+        private void btn_ellips_Click(object sender, EventArgs e)
+        {
+            index = 3;
+        }
+
+        private void btn_line_Click(object sender, EventArgs e)
+        {
+            index = 5;
+        }
+
+        private void btn_trg_Click(object sender, EventArgs e)
+        {
+            index = 6;
+        }
+
+        private void btn_rect_Click(object sender, EventArgs e)
+        {
+            index = 4;
         }
     }
 }
