@@ -89,6 +89,10 @@ namespace paint
                     g.DrawLine(erase, px, py);
                     py = px;
                 }
+                x = e.X;
+                y = e.Y;
+                sX = e.X - cX;
+                sY = e.Y - cY;
             }
             pic.Refresh();
         }
@@ -165,5 +169,36 @@ namespace paint
         {
             index = 4;
         }
+
+        private void pic_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            if (paint)
+            {
+                if (index == 3)
+                {
+                    g.DrawEllipse(p, cX, cY, sX, sY);
+                }
+                if (index == 4)
+                {
+                    g.DrawRectangle(p, cX, cY, sX, sY);
+                }
+                if (index == 5)
+                {
+                    g.DrawLine(p, cX, cY, x, y);
+                }
+                if (index == 6)
+                {
+                    Point[] trianglePoints = {
+                    new Point(cX + sX / 2, cY),
+                    new Point(cX, cY + sY),
+                    new Point(cX + sX, cY + sY)
+                 };
+                    g.DrawPolygon(p, trianglePoints);
+                }
+            }
+        }
     }
 }
+    
