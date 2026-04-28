@@ -199,6 +199,14 @@ namespace paint
                 }
             }
         }
+
+        private void btn_clear_Click(object sender, EventArgs e)
+        {
+            g.Clear(Color.White);
+            pic.Image = bm;
+            index = 0;
+            pic.Refresh();
+        }
     }
 }
     
