@@ -222,14 +222,6 @@ namespace paint
             float pY = 1f * pb.Image.Height / pb.Height;
             return new Point((int)(pt.X * pX), (int)(pt.Y * pY));
         }
-
-        private void color_picker_MouseClick(object sender, MouseEventArgs e)
-        {
-            Point point = set_point(color_picker, e.Location);
-            pic_color.BackColor = ((Bitmap)color_picker.Image).GetPixel(point.X, point.Y);
-            new_color = pic_color.BackColor;
-            p.Color = pic_color.BackColor;
-        }
         private void validate(Bitmap bm, Stack<Point> sp, int x, int y, Color old_color, Color new_color)
         {
             Color cx = bm.GetPixel(x, y);
@@ -242,35 +234,23 @@ namespace paint
         public void Fill(Bitmap bm, int x, int y, Color new_clr)
         {
             Color old_color = bm.GetPixel(x, y);
-            if (old_color == new_clr) return; // перевірка перед фарбуванням
-
-            Stack<Point> pixel = new Stack<Point>();
+            Stack<Point> pixel = new Stack<Point>(); // Створення стеку для зберігання пікселів для заливки
             pixel.Push(new Point(x, y));
+            bm.SetPixel(x, y, new_clr);
+            if (old_color == new_clr) return;
 
             while (pixel.Count > 0)
             {
-                Point pt = pixel.Pop();
+                Point pt = (Point)pixel.Pop();
                 if (pt.X > 0 && pt.Y > 0 && pt.X < bm.Width - 1 && pt.Y < bm.Height - 1)
                 {
-                    Color cx = bm.GetPixel(pt.X, pt.Y);
-                    if (cx == old_color)
-                    {
-                        bm.SetPixel(pt.X, pt.Y, new_clr);
-
-                        pixel.Push(new Point(pt.X - 1, pt.Y));
-                        pixel.Push(new Point(pt.X + 1, pt.Y));
-                        pixel.Push(new Point(pt.X, pt.Y - 1));
-                        pixel.Push(new Point(pt.X, pt.Y + 1));
-                    }
+                    validate(bm, pixel, pt.X - 1, pt.Y, old_color, new_clr);// Перевірка та додавання сусіднього пікселя зліва
+                    validate(bm, pixel, pt.X, pt.Y - 1, old_color, new_clr);// зверху
+                    validate(bm, pixel, pt.X + 1, pt.Y, old_color, new_clr);// справа
+                    validate(bm, pixel, pt.X, pt.Y + 1, old_color, new_clr);// знизу
                 }
             }
         }
-
-        private void btn_fill_Click(object sender, EventArgs e)
-        {
-            index = 7;
-        }
-
         private void pic_MouseClick_1(object sender, MouseEventArgs e)
         {
             if (index == 7)
@@ -278,42 +258,63 @@ namespace paint
                 Point point = set_point(pic, e.Location);
                 Fill(bm, point.X, point.Y, new_color);
                 pic.Image = bm;
-                pic.Refresh();
+
             }
         }
 
+        private void btn_fill_Click(object sender, EventArgs e)
+        {
+            index = 7;
+        }
         private void trackBar1_ValueChanged_1(object sender, EventArgs e)
         {
             p.Width = trackBar1.Value;
             erase.Width = trackBar1.Value;
         }
-
         private void btn_addpic_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            openFileDialog.Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*";
-            openFileDialog.Title = "Виберіть зображення";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                Image img = Image.FromFile(openFileDialog.FileName);
+                openFileDialog.Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*";
+                openFileDialog.Title = "Виберіть зображення";
 
-                bm = new Bitmap(pic.Width, pic.Height);
-
-                using (Graphics gr = Graphics.FromImage(bm))
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    gr.Clear(Color.White);
-                    gr.DrawImage(img, 0, 0, pic.Width, pic.Height);
+                    string filePath = openFileDialog.FileName;
+
+                    if (!FileValidator.IsImageFile(filePath))
+                    {
+                        MessageBox.Show("Можна додавати тільки зображення!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    using (Image img = Image.FromFile(filePath))
+                    {
+                        bm = new Bitmap(pic.Width, pic.Height);
+
+                        using (Graphics gr = Graphics.FromImage(bm))
+                        {
+                            gr.Clear(Color.White);
+                            gr.DrawImage(img, 0, 0, pic.Width, pic.Height);
+                        }
+                    }
+
+                    g = Graphics.FromImage(bm);
+                    pic.Image = bm;
                 }
-
-                g = Graphics.FromImage(bm);
-
-                pic.Image = bm;
-
             }
+        }
+
+        private void color_picker_MouseClick(object sender, MouseEventArgs e)
+        {
+            Point point = set_point(color_picker, e.Location); // Отримання координат кліку на зображенні 
+            pic_color.BackColor = ((Bitmap)color_picker.Image).GetPixel(point.X, point.Y);// Отримання кольору пікселя під кліком 
+            new_color = pic_color.BackColor;
+            p.Color = pic_color.BackColor;
         }
     }
 }
-
     
+
+
+
