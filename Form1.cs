@@ -225,11 +225,63 @@ namespace paint
 
         private void color_picker_MouseClick(object sender, MouseEventArgs e)
         {
-            Point point = set_point(color_picker, e.Location); 
+            Point point = set_point(color_picker, e.Location);
             pic_color.BackColor = ((Bitmap)color_picker.Image).GetPixel(point.X, point.Y);
             new_color = pic_color.BackColor;
             p.Color = pic_color.BackColor;
         }
+        private void validate(Bitmap bm, Stack<Point> sp, int x, int y, Color old_color, Color new_color)
+        {
+            Color cx = bm.GetPixel(x, y);
+            if (cx == old_color)
+            {
+                sp.Push(new Point(x, y));
+                bm.SetPixel(x, y, new_color);
+            }
+        }
+        public void Fill(Bitmap bm, int x, int y, Color new_clr)
+        {
+            Color old_color = bm.GetPixel(x, y);
+            if (old_color == new_clr) return; // перевірка перед фарбуванням
+
+            Stack<Point> pixel = new Stack<Point>();
+            pixel.Push(new Point(x, y));
+
+            while (pixel.Count > 0)
+            {
+                Point pt = pixel.Pop();
+                if (pt.X > 0 && pt.Y > 0 && pt.X < bm.Width - 1 && pt.Y < bm.Height - 1)
+                {
+                    Color cx = bm.GetPixel(pt.X, pt.Y);
+                    if (cx == old_color)
+                    {
+                        bm.SetPixel(pt.X, pt.Y, new_clr);
+
+                        pixel.Push(new Point(pt.X - 1, pt.Y));
+                        pixel.Push(new Point(pt.X + 1, pt.Y));
+                        pixel.Push(new Point(pt.X, pt.Y - 1));
+                        pixel.Push(new Point(pt.X, pt.Y + 1));
+                    }
+                }
+            }
+        }
+
+        private void btn_fill_Click(object sender, EventArgs e)
+        {
+            index = 7;
+        }
+
+        private void pic_MouseClick_1(object sender, MouseEventArgs e)
+        {
+            if (index == 7)
+            {
+                Point point = set_point(pic, e.Location);
+                Fill(bm, point.X, point.Y, new_color);
+                pic.Image = bm;
+                pic.Refresh();
+            }
+        }
     }
-}
+    }
+
     
