@@ -287,6 +287,32 @@ namespace paint
             p.Width = trackBar1.Value;
             erase.Width = trackBar1.Value;
         }
+
+        private void btn_addpic_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*";
+            openFileDialog.Title = "Виберіть зображення";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Image img = Image.FromFile(openFileDialog.FileName);
+
+                bm = new Bitmap(pic.Width, pic.Height);
+
+                using (Graphics gr = Graphics.FromImage(bm))
+                {
+                    gr.Clear(Color.White);
+                    gr.DrawImage(img, 0, 0, pic.Width, pic.Height);
+                }
+
+                g = Graphics.FromImage(bm);
+
+                pic.Image = bm;
+
+            }
+        }
     }
 }
 
