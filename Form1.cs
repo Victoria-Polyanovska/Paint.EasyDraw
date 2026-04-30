@@ -281,7 +281,13 @@ namespace paint
                 pic.Refresh();
             }
         }
+
+        private void trackBar1_ValueChanged_1(object sender, EventArgs e)
+        {
+            p.Width = trackBar1.Value;
+            erase.Width = trackBar1.Value;
+        }
     }
-    }
+}
 
     
