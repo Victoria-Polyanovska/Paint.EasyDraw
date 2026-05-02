@@ -1,4 +1,7 @@
+using Microsoft.VisualBasic;
 using paint.ToolsLibrary;
+using System.Drawing;
+using Microsoft.VisualBasic;
 
 namespace paint
 {
@@ -7,6 +10,7 @@ namespace paint
         public Form1()
         {
             InitializeComponent();
+            InitializeTextOptionsPanel();
 
             this.Width = 1330;
             this.Height = 750;
@@ -29,8 +33,14 @@ namespace paint
         int index;
         int x, y, sX, sY, cX, cY;
 
+        private List<Shape> shapes = new List<Shape>();
+
         ColorDialog cd = new ColorDialog();
         Color new_color;
+
+        private bool drawingText = false;
+        private Font currentFont = new Font("Arial", 12);
+        private FontStyle currentFontStyle = FontStyle.Regular;
 
         private void pic_Click(object sender, EventArgs e)
         {
@@ -96,7 +106,42 @@ namespace paint
             }
             pic.Refresh();
         }
+        private void InitializeTextOptionsPanel()
+        {
+            fontComboBoxInPanel.Items.Clear();
 
+            foreach (FontFamily font in FontFamily.Families)
+            {
+                fontComboBoxInPanel.Items.Add(font.Name);
+            }
+
+            fontComboBoxInPanel.SelectedItem = "Arial";
+
+            fontComboBoxInPanel.SelectedIndexChanged += (s, e) =>
+            {
+                if (fontComboBoxInPanel.SelectedItem != null)
+                {
+                    currentFont = new Font(
+                        fontComboBoxInPanel.SelectedItem.ToString(),
+                        currentFont.Size,
+                        currentFontStyle
+                    );
+                }
+            };
+
+            fontSizeComboBoxInPanel.Minimum = 8;
+            fontSizeComboBoxInPanel.Maximum = 72;
+            fontSizeComboBoxInPanel.Value = 12;
+
+            fontSizeComboBoxInPanel.ValueChanged += (s, e) =>
+            {
+                currentFont = new Font(
+                    currentFont.FontFamily,
+                    (float)fontSizeComboBoxInPanel.Value,
+                    currentFontStyle
+                );
+            };
+        }
         private void pic_MouseUp(object sender, MouseEventArgs e)
         {
             paint = false;
@@ -198,6 +243,10 @@ namespace paint
                     g.DrawPolygon(p, trianglePoints);
                 }
             }
+            foreach (var shape in shapes)
+            {
+                shape.Draw(e.Graphics);
+            }
         }
 
         private void btn_clear_Click(object sender, EventArgs e)
@@ -258,7 +307,28 @@ namespace paint
                 Point point = set_point(pic, e.Location);
                 Fill(bm, point.X, point.Y, new_color);
                 pic.Image = bm;
+            }
+            else if (index == 8 && drawingText)
+            {
+                string input = Interaction.InputBox(
+                    "Введіть текст:",
+                    "Додавання тексту",
+                    "Текст"
+                );
 
+                if (!string.IsNullOrEmpty(input))
+                {
+                    Point point = set_point(pic, e.Location);
+
+                    TextShape textShape = new TextShape(input, point, currentFont, p.Color);
+                    using (Graphics gBm = Graphics.FromImage(bm))
+                    {
+                        textShape.Draw(gBm);
+                    }
+
+                    pic.Image = bm;
+                    pic.Refresh();
+                }
             }
         }
 
@@ -311,6 +381,51 @@ namespace paint
             pic_color.BackColor = ((Bitmap)color_picker.Image).GetPixel(point.X, point.Y);// Отримання кольору пікселя під кліком 
             new_color = pic_color.BackColor;
             p.Color = pic_color.BackColor;
+        }
+
+        private void btn_text_Click(object sender, EventArgs e)
+        {
+            textOptionsPanel.Visible = !textOptionsPanel.Visible;
+
+            if (index == 8)
+            {
+                index = 0;
+                btn_text.BackColor = SystemColors.GrayText;
+                drawingText = false;
+            }
+            else
+            {
+                index = 8;
+                btn_text.BackColor = Color.DimGray;
+                drawingText = true;
+            }
+        }
+        private void UpdateCurrentFont()
+        {
+            if (fontComboBoxInPanel.SelectedItem != null)
+            {
+                string fontName = fontComboBoxInPanel.SelectedItem.ToString();
+                float fontSize = (float)fontSizeComboBoxInPanel.Value; // тут NumericUpDown
+                currentFont = new Font(fontName, fontSize, currentFontStyle);
+            }
+
+        }
+        private void btn_b_Click(object sender, EventArgs e)
+        {
+            currentFontStyle ^= FontStyle.Bold;
+            UpdateCurrentFont();
+        }
+
+        private void btn_i_Click(object sender, EventArgs e)
+        {
+            currentFontStyle ^= FontStyle.Italic;
+            UpdateCurrentFont();
+        }
+
+        private void btn_u_Click(object sender, EventArgs e)
+        {
+            currentFontStyle ^= FontStyle.Underline;
+            UpdateCurrentFont();
         }
     }
 }
