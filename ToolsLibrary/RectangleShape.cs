@@ -4,26 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace paint.ToolsLibrary
+namespace Paint_FinalProject.ToolsLibrary
 {
     public class RectangleShape : Shape
     {
-        public Rectangle Rect { get; set; }
+        public Point StartPoint { get; set; }
+        public Point EndPoint { get; set; }
 
-        public RectangleShape(Point startPoint, Point endPoint, Color color, float width)
+        public RectangleShape(Point start, Point end, Color color, float thickness)
+            : base(color, thickness)
         {
-            Rect = new Rectangle(
-                Math.Min(startPoint.X, endPoint.X),
-                Math.Min(startPoint.Y, endPoint.Y),
-                Math.Abs(endPoint.X - startPoint.X),
-                Math.Abs(endPoint.Y - startPoint.Y)
-            );
-            Pen = new Pen(color, width);
+            StartPoint = start;
+            EndPoint = end;
         }
 
         public override void Draw(Graphics g)
         {
-            g.DrawRectangle(Pen, Rect);
+            using (Pen pen = new Pen(Color, Thickness))
+            {
+                int x = Math.Min(StartPoint.X, EndPoint.X);
+                int y = Math.Min(StartPoint.Y, EndPoint.Y);
+                int width = Math.Abs(StartPoint.X - EndPoint.X);
+                int height = Math.Abs(StartPoint.Y - EndPoint.Y);
+
+                g.DrawRectangle(pen, x, y, width, height);
+            }
         }
     }
 }

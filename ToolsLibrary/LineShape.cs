@@ -4,23 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace paint.ToolsLibrary
+namespace Paint_FinalProject.ToolsLibrary
 {
     public class LineShape : Shape
     {
-        public Point Start { get; set; }
-        public Point End { get; set; }
+        public Point StartPoint { get; set; }
+        public Point EndPoint { get; set; }
 
-        public LineShape(Point start, Point end, Color color, float width)
+        public LineShape(Point start, Point end, Color color, float thickness)
+            : base(color, thickness)
         {
-            Start = start;
-            End = end;
-            Pen = new Pen(color, width);
+            StartPoint = start;
+            EndPoint = end;
         }
 
         public override void Draw(Graphics g)
         {
-            g.DrawLine(Pen, Start, End);
+            using (Pen pen = new Pen(Color, Thickness))
+            {
+                g.DrawLine(pen, StartPoint, EndPoint);
+            }
         }
     }
 }

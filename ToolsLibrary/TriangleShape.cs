@@ -4,25 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace paint.ToolsLibrary
+namespace Paint_FinalProject.ToolsLibrary
 {
     public class TriangleShape : Shape
     {
-        public Point P1 { get; set; }
-        public Point P2 { get; set; }
-        public Point P3 { get; set; }
+        public Point StartPoint { get; set; }
+        public Point EndPoint { get; set; }
 
-        public TriangleShape(Point start, Point end, Color color, float width)
+        public TriangleShape(Point start, Point end, Color color, float thickness)
+            : base(color, thickness)
         {
-            P1 = new Point(start.X + (end.X - start.X) / 2, start.Y);
-            P2 = new Point(start.X, end.Y);
-            P3 = new Point(end.X, end.Y);
-            Pen = new Pen(color, width);
+            StartPoint = start;
+            EndPoint = end;
         }
 
         public override void Draw(Graphics g)
         {
-            g.DrawPolygon(Pen, new[] { P1, P2, P3 });
+            using (Pen pen = new Pen(Color, Thickness))
+            {
+                int left = Math.Min(StartPoint.X, EndPoint.X);
+                int right = Math.Max(StartPoint.X, EndPoint.X);
+                int top = Math.Min(StartPoint.Y, EndPoint.Y);
+                int bottom = Math.Max(StartPoint.Y, EndPoint.Y);
+
+                Point[] points = {
+                    new Point(left + (right - left) / 2, top), 
+                    new Point(left, bottom),                   
+                    new Point(right, bottom)                
+                };
+
+                g.DrawPolygon(pen, points);
+            }
         }
     }
 }

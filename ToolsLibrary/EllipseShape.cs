@@ -4,21 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace paint.ToolsLibrary
+namespace Paint_FinalProject.ToolsLibrary
 {
     public class EllipseShape : Shape
     {
-        public Rectangle Rect { get; set; }
+        public Rectangle BoundingBox { get; set; }
 
-        public EllipseShape(Rectangle rect, Color color, float width)
+        public EllipseShape(Rectangle rect, Color color, float thickness)
+            : base(color, thickness)
         {
-            Rect = rect;
-            Pen = new Pen(color, width);
+            BoundingBox = rect;
         }
 
         public override void Draw(Graphics g)
         {
-            g.DrawEllipse(Pen, Rect);
+            using (Pen pen = new Pen(Color, Thickness))
+            {
+                g.DrawEllipse(pen, BoundingBox);
+            }
         }
     }
 }
