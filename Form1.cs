@@ -98,8 +98,8 @@ namespace paint
                 (fontComboBoxInPanel.SelectedItem != null)
                 {
                     currentFont = new Font(
-                        fontComboBoxInPanel.SelectedItem.ToString(),
-                        currentFont.Size, currentFontStyle);
+                      fontComboBoxInPanel.SelectedItem.ToString(),
+                      currentFont.Size, currentFontStyle);
                 }
             };
             fontSizeComboBoxInPanel.Minimum = 8;
@@ -108,9 +108,9 @@ namespace paint
             fontSizeComboBoxInPanel.ValueChanged += (s, e) =>
             {
                 currentFont = new Font(
-                    currentFont.FontFamily,
-                    (float)fontSizeComboBoxInPanel.Value,
-                    currentFontStyle);
+                  currentFont.FontFamily,
+                  (float)fontSizeComboBoxInPanel.Value,
+                  currentFontStyle);
             };
         }
         static Point set_point(PictureBox pb, Point pt)
@@ -169,42 +169,36 @@ namespace paint
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp",
+                Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*",
                 Title = "Виберіть зображення"
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog.FileName;
+
                 string[] allowedExt = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
                 string ext = Path.GetExtension(filePath).ToLower();
 
                 if (!allowedExt.Contains(ext))
                 {
                     MessageBox.Show("Можна додавати тільки зображення!", "Помилка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                      MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                try
+                using (Image img = Image.FromFile(filePath))
                 {
-                    using (Image tempImg = Image.FromFile(filePath))
-                    {
-                        bm = new Bitmap(pic.Width, pic.Height);
+                    bm = new Bitmap(pic.Width, pic.Height);
 
-                        using (Graphics gr = Graphics.FromImage(bm))
-                        {
-                            gr.Clear(Color.White);
-                            gr.DrawImage(tempImg, 0, 0, pic.Width, pic.Height);
-                        }
+                    using (Graphics gr = Graphics.FromImage(bm))
+                    {
+                        gr.Clear(Color.White);
+                        gr.DrawImage(img, 0, 0, pic.Width, pic.Height);
                     }
+
                     g = Graphics.FromImage(bm);
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                     pic.Image = bm;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Не вдалося завантажити файл: {ex.Message}");
                 }
             }
         }
@@ -360,50 +354,56 @@ namespace paint
         private void pic_MouseUp(object sender, MouseEventArgs e)
         {
             paint = false;
-            Point startPoint = set_point(pic, py);
+
+            Point startPoint = set_point(pic, new Point(cX, cY));
             Point endPoint = set_point(pic, e.Location);
 
-            int curSX = endPoint.X - startPoint.X;
-            int curSY = endPoint.Y - startPoint.Y;
+            int curWidth = endPoint.X - startPoint.X;
+            int curHeight = endPoint.Y - startPoint.Y;
 
             Shape shape = null;
 
-            if (index == 3) 
+            try
             {
-                shape = new EllipseShape(new Rectangle(
-                    Math.Min(startPoint.X, endPoint.X),
-                    Math.Min(startPoint.Y, endPoint.Y),
-                    Math.Abs(curSX),
-                    Math.Abs(curSY)),
-                    p.Color, p.Width);
-            }
-            else if (index == 4) 
-            {
-                shape = new RectangleShape(
-                    new Point(Math.Min(startPoint.X, endPoint.X), Math.Min(startPoint.Y, endPoint.Y)),
-                    new Point(Math.Max(startPoint.X, endPoint.X), Math.Max(startPoint.Y, endPoint.Y)),
-                    p.Color, p.Width);
-            }
-            else if (index == 5) 
-            {
-                shape = new LineShape(startPoint, endPoint, p.Color, p.Width);
-            }
-            else if (index == 6) 
-            {
-                shape = new TriangleShape(startPoint, endPoint, p.Color, p.Width);
-            }
-
-            if (shape != null)
-            {
-                using (Graphics gBm = Graphics.FromImage(bm))
+                if (index == 3) 
                 {
-                    gBm.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                    shape.Draw(gBm);
+                    Rectangle rect = new Rectangle(
+                        Math.Min(startPoint.X, endPoint.X),
+                        Math.Min(startPoint.Y, endPoint.Y),
+                        Math.Abs(curWidth),
+                        Math.Abs(curHeight)
+                    );
+                    shape = new EllipseShape(rect, p.Color, (int)p.Width);
                 }
-                pic.Image = bm;
-                pic.Refresh();
+                else if (index == 4) 
+                {
+                    shape = new RectangleShape(startPoint, endPoint, p.Color, (int)p.Width);
+                }
+                else if (index == 5) 
+                {
+                    shape = new LineShape(startPoint, endPoint, p.Color, (int)p.Width);
+                }
+                else if (index == 6) 
+                {
+                    shape = new TriangleShape(startPoint, endPoint, p.Color, (int)p.Width);
+                }
+                if (shape != null)
+                {
+                    using (Graphics gBm = Graphics.FromImage(bm))
+                    {
+                        gBm.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                        shape.Draw(gBm);
+                    }
+
+                    pic.Image = bm;
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка малювання фігури: " + ex.Message);
+            }
+            pic.Refresh();
         }
 
         private void btn_pencil_Click_1(object sender, EventArgs e)
@@ -416,47 +416,5 @@ namespace paint
             index = 2;
         }
 
-        private void btn_save_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Зображення PNG (*.png)|*.png|Зображення JPEG (*.jpg)|*.jpg|Бітмап (*.bmp)|*.bmp",
-                Title = "Зберегти малюнок",
-                FileName = "малюнок" 
-            };
-
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    string extension = Path.GetExtension(saveFileDialog.FileName).ToLower();
-
-                    System.Drawing.Imaging.ImageFormat format = System.Drawing.Imaging.ImageFormat.Png;
-
-                    switch (extension)
-                    {
-                        case ".jpg":
-                        case ".jpeg":
-                            format = System.Drawing.Imaging.ImageFormat.Jpeg;
-                            break;
-                        case ".bmp":
-                            format = System.Drawing.Imaging.ImageFormat.Bmp;
-                            break;
-                    }
-
-                    bm.Save(saveFileDialog.FileName, format);
-
-                    MessageBox.Show("Зображення успішно збережено!", "Успіх",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Помилка при збереженні: {ex.Message}", "Помилка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
     }
 }
-
-    

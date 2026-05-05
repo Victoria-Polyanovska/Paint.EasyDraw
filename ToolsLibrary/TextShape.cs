@@ -13,6 +13,11 @@ namespace paint.ToolsLibrary
         public Font Font { get; set; }
         public Color Color { get; set; }
 
+<<<<<<< HEAD
+=======
+        public TextShape() { }
+
+>>>>>>> 86ae81962d88ba12f78c01372b8c85975447304f
         public TextShape(string text, Point position, Font font, Color color)
         {
             Text = text;
@@ -29,6 +34,9 @@ namespace paint.ToolsLibrary
             }
         }
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 86ae81962d88ba12f78c01372b8c85975447304f
 }

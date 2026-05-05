@@ -119,6 +119,19 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btn_addpic.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+<<<<<<< HEAD
+=======
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
+        4wAAAOMBD+bfpwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACwSURBVFhH7ZdL
+        CoAwDESL1/VzBvVeegLBS6g3cK0zpauQhVRJQRJ4m1TsA0snhsyqwAiOxJB6ZtWBS9AAs5qBFGDPrFYg
+        BdgzKxdwARdwgU8FGCK823mVLg85gRRgT3tWg3u1IAYYU02+zIoexDjVFi3g3kUFNhCHCW3RgvgJeBA4
+        TExAOzAabw8h96pB9hT1r3sgp1zABVzABYr/mnGYkAKmP6cMEabonmCqZQRLCDeM/zfSV+64+gAAAABJ
+        RU5ErkJggg==
+</value>
+  </data>
+  <data name="btn_layers.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+>>>>>>> 86ae81962d88ba12f78c01372b8c85975447304f
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
         4wAAAOMBD+bfpwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACwSURBVFhH7ZdL
