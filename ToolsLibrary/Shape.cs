@@ -10,5 +10,7 @@ namespace paint.ToolsLibrary
     {
         public Pen Pen { get; set; }
         public abstract void Draw(Graphics g);
+        public bool Visible { get; set; } = true;
+
     }
 }
