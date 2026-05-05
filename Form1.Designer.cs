@@ -31,8 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             panel1 = new Panel();
             panel3 = new Panel();
-            btn_back = new Button();
-            btn_layers = new Button();
+            btn_addpic = new Button();
             btn_trg = new Button();
             pic_color = new Button();
             color_picker = new PictureBox();
@@ -46,6 +45,7 @@
             btn_text = new Button();
             btn_pencil = new Button();
             btn_eraser = new Button();
+            btn_back = new Button();
             panel2 = new Panel();
             panel4 = new Panel();
             btn_zoomout = new Button();
@@ -58,16 +58,8 @@
             btn_u = new Button();
             btn_i = new Button();
             btn_b = new Button();
-            numericUpDown1 = new NumericUpDown();
-            comboBox1 = new ComboBox();
-            TableLayoutPanel = new Panel();
-            layersPanel = new Panel();
-            btn_down = new Button();
-            listBox1 = new ListBox();
-            btn_up = new Button();
-            btn_vis = new Button();
-            btn_add = new Button();
-            btn_del = new Button();
+            fontSizeComboBoxInPanel = new NumericUpDown();
+            fontComboBoxInPanel = new ComboBox();
             panel1.SuspendLayout();
             panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)color_picker).BeginInit();
@@ -76,9 +68,7 @@
             ((System.ComponentModel.ISupportInitialize)pic).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             textOptionsPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
-            TableLayoutPanel.SuspendLayout();
-            layersPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)fontSizeComboBoxInPanel).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -89,14 +79,13 @@
             panel1.ForeColor = Color.Gray;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1308, 111);
+            panel1.Size = new Size(1304, 111);
             panel1.TabIndex = 0;
             // 
             // panel3
             // 
             panel3.BackColor = Color.FromArgb(64, 64, 64);
-            panel3.Controls.Add(btn_back);
-            panel3.Controls.Add(btn_layers);
+            panel3.Controls.Add(btn_addpic);
             panel3.Controls.Add(btn_trg);
             panel3.Controls.Add(pic_color);
             panel3.Controls.Add(color_picker);
@@ -112,40 +101,25 @@
             panel3.Controls.Add(btn_eraser);
             panel3.Location = new Point(3, 12);
             panel3.Name = "panel3";
-            panel3.Size = new Size(1352, 90);
+            panel3.Size = new Size(1424, 90);
             panel3.TabIndex = 3;
             // 
-            // btn_back
+            // btn_addpic
             // 
-            btn_back.BackColor = Color.FromArgb(64, 64, 64);
-            btn_back.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_back.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_back.FlatStyle = FlatStyle.Flat;
-            btn_back.ForeColor = Color.White;
-            btn_back.Location = new Point(1205, 9);
-            btn_back.Name = "btn_back";
-            btn_back.Size = new Size(95, 78);
-            btn_back.TabIndex = 13;
-            btn_back.Text = "Back to menu";
-            btn_back.TextAlign = ContentAlignment.TopCenter;
-            btn_back.UseVisualStyleBackColor = false;
-            btn_back.Click += btn_back_Click;
-            // 
-            // btn_layers
-            // 
-            btn_layers.BackColor = Color.Transparent;
-            btn_layers.BackgroundImage = (Image)resources.GetObject("btn_layers.BackgroundImage");
-            btn_layers.BackgroundImageLayout = ImageLayout.Center;
-            btn_layers.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_layers.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_layers.FlatStyle = FlatStyle.Flat;
-            btn_layers.ForeColor = Color.Transparent;
-            btn_layers.Location = new Point(747, 9);
-            btn_layers.Name = "btn_layers";
-            btn_layers.Size = new Size(75, 69);
-            btn_layers.TabIndex = 12;
-            btn_layers.TextAlign = ContentAlignment.BottomRight;
-            btn_layers.UseVisualStyleBackColor = false;
+            btn_addpic.BackColor = Color.Transparent;
+            btn_addpic.BackgroundImageLayout = ImageLayout.Center;
+            btn_addpic.FlatAppearance.MouseDownBackColor = Color.Maroon;
+            btn_addpic.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
+            btn_addpic.FlatStyle = FlatStyle.Flat;
+            btn_addpic.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            btn_addpic.ForeColor = Color.White;
+            btn_addpic.Image = (Image)resources.GetObject("btn_addpic.Image");
+            btn_addpic.Location = new Point(747, 9);
+            btn_addpic.Name = "btn_addpic";
+            btn_addpic.Size = new Size(75, 69);
+            btn_addpic.TabIndex = 23;
+            btn_addpic.UseVisualStyleBackColor = false;
+            btn_addpic.Click += btn_addpic_Click;
             // 
             // btn_trg
             // 
@@ -162,11 +136,12 @@
             btn_trg.TabIndex = 10;
             btn_trg.TextAlign = ContentAlignment.BottomRight;
             btn_trg.UseVisualStyleBackColor = false;
+            btn_trg.Click += btn_trg_Click_1;
             // 
             // pic_color
             // 
             pic_color.BackColor = Color.White;
-            pic_color.Location = new Point(828, 23);
+            pic_color.Location = new Point(909, 26);
             pic_color.Name = "pic_color";
             pic_color.Size = new Size(44, 40);
             pic_color.TabIndex = 0;
@@ -175,12 +150,13 @@
             // color_picker
             // 
             color_picker.Image = (Image)resources.GetObject("color_picker.Image");
-            color_picker.Location = new Point(878, 6);
+            color_picker.Location = new Point(959, 6);
             color_picker.Name = "color_picker";
             color_picker.Size = new Size(230, 81);
             color_picker.SizeMode = PictureBoxSizeMode.StretchImage;
             color_picker.TabIndex = 4;
             color_picker.TabStop = false;
+            color_picker.MouseClick += color_picker_MouseClick;
             // 
             // btn_clear
             // 
@@ -189,13 +165,14 @@
             btn_clear.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
             btn_clear.FlatStyle = FlatStyle.Flat;
             btn_clear.ForeColor = Color.White;
-            btn_clear.Location = new Point(1114, 51);
+            btn_clear.Location = new Point(1195, 51);
             btn_clear.Name = "btn_clear";
             btn_clear.Size = new Size(84, 36);
             btn_clear.TabIndex = 11;
             btn_clear.Text = "Clear";
             btn_clear.TextAlign = ContentAlignment.TopCenter;
             btn_clear.UseVisualStyleBackColor = false;
+            btn_clear.Click += btn_clear_Click;
             // 
             // btn_line
             // 
@@ -212,6 +189,7 @@
             btn_line.TabIndex = 9;
             btn_line.TextAlign = ContentAlignment.BottomRight;
             btn_line.UseVisualStyleBackColor = false;
+            btn_line.Click += btn_line_Click_1;
             // 
             // btn_save
             // 
@@ -220,13 +198,14 @@
             btn_save.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
             btn_save.FlatStyle = FlatStyle.Flat;
             btn_save.ForeColor = Color.White;
-            btn_save.Location = new Point(1115, 9);
+            btn_save.Location = new Point(1195, 9);
             btn_save.Name = "btn_save";
             btn_save.Size = new Size(84, 36);
             btn_save.TabIndex = 10;
             btn_save.Text = "Save";
             btn_save.TextAlign = ContentAlignment.TopCenter;
             btn_save.UseVisualStyleBackColor = false;
+            btn_save.Click += btn_save_Click;
             // 
             // btn_color
             // 
@@ -243,6 +222,7 @@
             btn_color.TabIndex = 1;
             btn_color.TextAlign = ContentAlignment.BottomCenter;
             btn_color.UseVisualStyleBackColor = false;
+            btn_color.Click += btn_color_Click_1;
             // 
             // btn_rect
             // 
@@ -259,6 +239,7 @@
             btn_rect.TabIndex = 8;
             btn_rect.TextAlign = ContentAlignment.BottomCenter;
             btn_rect.UseVisualStyleBackColor = false;
+            btn_rect.Click += btn_rect_Click_1;
             // 
             // btn_fill
             // 
@@ -275,6 +256,7 @@
             btn_fill.TabIndex = 3;
             btn_fill.TextAlign = ContentAlignment.BottomCenter;
             btn_fill.UseVisualStyleBackColor = false;
+            btn_fill.Click += btn_fill_Click_1;
             // 
             // btn_ellips
             // 
@@ -291,6 +273,7 @@
             btn_ellips.TabIndex = 6;
             btn_ellips.TextAlign = ContentAlignment.BottomCenter;
             btn_ellips.UseVisualStyleBackColor = false;
+            btn_ellips.Click += btn_ellips_Click_1;
             // 
             // btn_text
             // 
@@ -307,6 +290,7 @@
             btn_text.TabIndex = 7;
             btn_text.TextAlign = ContentAlignment.BottomCenter;
             btn_text.UseVisualStyleBackColor = false;
+            btn_text.Click += btn_text_Click;
             // 
             // btn_pencil
             // 
@@ -323,7 +307,7 @@
             btn_pencil.TabIndex = 4;
             btn_pencil.TextAlign = ContentAlignment.BottomCenter;
             btn_pencil.UseVisualStyleBackColor = false;
-            btn_pencil.Click += btn_pencil_Click;
+            btn_pencil.Click += btn_pencil_Click_1;
             // 
             // btn_eraser
             // 
@@ -340,7 +324,23 @@
             btn_eraser.TabIndex = 5;
             btn_eraser.TextAlign = ContentAlignment.BottomCenter;
             btn_eraser.UseVisualStyleBackColor = false;
-            btn_eraser.Click += btn_eraser_Click;
+            btn_eraser.Click += btn_eraser_Click_1;
+            // 
+            // btn_back
+            // 
+            btn_back.BackColor = Color.FromArgb(64, 64, 64);
+            btn_back.FlatAppearance.MouseDownBackColor = Color.Maroon;
+            btn_back.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
+            btn_back.FlatStyle = FlatStyle.Flat;
+            btn_back.ForeColor = Color.White;
+            btn_back.Location = new Point(948, 11);
+            btn_back.Name = "btn_back";
+            btn_back.Size = new Size(170, 36);
+            btn_back.TabIndex = 13;
+            btn_back.Text = "Back to menu";
+            btn_back.TextAlign = ContentAlignment.TopCenter;
+            btn_back.UseVisualStyleBackColor = false;
+            btn_back.Click += btn_back_Click;
             // 
             // panel2
             // 
@@ -349,13 +349,14 @@
             panel2.Dock = DockStyle.Bottom;
             panel2.Location = new Point(0, 616);
             panel2.Name = "panel2";
-            panel2.Size = new Size(1308, 78);
+            panel2.Size = new Size(1304, 78);
             panel2.TabIndex = 1;
             // 
             // panel4
             // 
             panel4.BackColor = Color.FromArgb(64, 64, 64);
             panel4.Controls.Add(btn_zoomout);
+            panel4.Controls.Add(btn_back);
             panel4.Controls.Add(btn_zoomin);
             panel4.Controls.Add(btn_redo);
             panel4.Controls.Add(btn_undo);
@@ -437,7 +438,8 @@
             pic.Size = new Size(877, 493);
             pic.TabIndex = 2;
             pic.TabStop = false;
-            pic.Click += pic_Click;
+            pic.Paint += pic_Paint_1;
+            pic.MouseClick += pic_MouseClick;
             pic.MouseDown += pic_MouseDown;
             pic.MouseMove += pic_MouseMove;
             pic.MouseUp += pic_MouseUp;
@@ -448,16 +450,17 @@
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(293, 69);
             trackBar1.TabIndex = 3;
+            trackBar1.ValueChanged += trackBar1_ValueChanged_2;
             // 
             // textOptionsPanel
             // 
-            textOptionsPanel.BackColor = Color.FromArgb(64, 64, 64);
+            textOptionsPanel.BackColor = SystemColors.WindowFrame;
             textOptionsPanel.Controls.Add(btn_u);
             textOptionsPanel.Controls.Add(btn_i);
             textOptionsPanel.Controls.Add(btn_b);
-            textOptionsPanel.Controls.Add(numericUpDown1);
-            textOptionsPanel.Controls.Add(comboBox1);
-            textOptionsPanel.Location = new Point(7, 11);
+            textOptionsPanel.Controls.Add(fontSizeComboBoxInPanel);
+            textOptionsPanel.Controls.Add(fontComboBoxInPanel);
+            textOptionsPanel.Location = new Point(1004, 179);
             textOptionsPanel.Name = "textOptionsPanel";
             textOptionsPanel.Size = new Size(288, 174);
             textOptionsPanel.TabIndex = 4;
@@ -478,6 +481,7 @@
             btn_u.TabIndex = 16;
             btn_u.Text = "U";
             btn_u.UseVisualStyleBackColor = false;
+            btn_u.Click += btn_u_Click;
             // 
             // btn_i
             // 
@@ -494,6 +498,7 @@
             btn_i.TabIndex = 15;
             btn_i.Text = "I";
             btn_i.UseVisualStyleBackColor = false;
+            btn_i.Click += btn_i_Click;
             // 
             // btn_b
             // 
@@ -510,152 +515,38 @@
             btn_b.TabIndex = 14;
             btn_b.Text = "B";
             btn_b.UseVisualStyleBackColor = false;
+            btn_b.Click += btn_b_Click;
             // 
-            // numericUpDown1
+            // fontSizeComboBoxInPanel
             // 
-            numericUpDown1.Location = new Point(20, 70);
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(197, 35);
-            numericUpDown1.TabIndex = 1;
+            fontSizeComboBoxInPanel.Location = new Point(20, 70);
+            fontSizeComboBoxInPanel.Name = "fontSizeComboBoxInPanel";
+            fontSizeComboBoxInPanel.Size = new Size(197, 35);
+            fontSizeComboBoxInPanel.TabIndex = 1;
             // 
-            // comboBox1
+            // fontComboBoxInPanel
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(20, 120);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(197, 38);
-            comboBox1.TabIndex = 0;
-            // 
-            // TableLayoutPanel
-            // 
-            TableLayoutPanel.BackColor = Color.Black;
-            TableLayoutPanel.Controls.Add(textOptionsPanel);
-            TableLayoutPanel.Controls.Add(layersPanel);
-            TableLayoutPanel.Location = new Point(1001, 189);
-            TableLayoutPanel.Name = "TableLayoutPanel";
-            TableLayoutPanel.Size = new Size(300, 421);
-            TableLayoutPanel.TabIndex = 5;
-            TableLayoutPanel.Visible = false;
-            // 
-            // layersPanel
-            // 
-            layersPanel.BackColor = Color.FromArgb(64, 64, 64);
-            layersPanel.Controls.Add(btn_down);
-            layersPanel.Controls.Add(listBox1);
-            layersPanel.Controls.Add(btn_up);
-            layersPanel.Controls.Add(btn_vis);
-            layersPanel.Controls.Add(btn_add);
-            layersPanel.Controls.Add(btn_del);
-            layersPanel.Location = new Point(7, 192);
-            layersPanel.Name = "layersPanel";
-            layersPanel.Size = new Size(288, 226);
-            layersPanel.TabIndex = 23;
-            // 
-            // btn_down
-            // 
-            btn_down.BackColor = Color.Transparent;
-            btn_down.BackgroundImageLayout = ImageLayout.Center;
-            btn_down.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_down.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_down.FlatStyle = FlatStyle.Flat;
-            btn_down.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btn_down.ForeColor = Color.White;
-            btn_down.Image = (Image)resources.GetObject("btn_down.Image");
-            btn_down.Location = new Point(85, 132);
-            btn_down.Name = "btn_down";
-            btn_down.Size = new Size(49, 43);
-            btn_down.TabIndex = 21;
-            btn_down.UseVisualStyleBackColor = false;
-            // 
-            // listBox1
-            // 
-            listBox1.FormattingEnabled = true;
-            listBox1.ItemHeight = 30;
-            listBox1.Location = new Point(20, 16);
-            listBox1.Name = "listBox1";
-            listBox1.Size = new Size(197, 34);
-            listBox1.TabIndex = 17;
-            // 
-            // btn_up
-            // 
-            btn_up.BackColor = Color.Transparent;
-            btn_up.BackgroundImageLayout = ImageLayout.Center;
-            btn_up.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_up.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_up.FlatStyle = FlatStyle.Flat;
-            btn_up.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btn_up.ForeColor = Color.White;
-            btn_up.Image = (Image)resources.GetObject("btn_up.Image");
-            btn_up.Location = new Point(20, 132);
-            btn_up.Name = "btn_up";
-            btn_up.Size = new Size(49, 43);
-            btn_up.TabIndex = 20;
-            btn_up.UseVisualStyleBackColor = false;
-            // 
-            // btn_vis
-            // 
-            btn_vis.BackColor = Color.Transparent;
-            btn_vis.BackgroundImageLayout = ImageLayout.Center;
-            btn_vis.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_vis.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_vis.FlatStyle = FlatStyle.Flat;
-            btn_vis.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btn_vis.ForeColor = Color.White;
-            btn_vis.Image = (Image)resources.GetObject("btn_vis.Image");
-            btn_vis.Location = new Point(20, 68);
-            btn_vis.Name = "btn_vis";
-            btn_vis.Size = new Size(49, 43);
-            btn_vis.TabIndex = 22;
-            btn_vis.UseVisualStyleBackColor = false;
-            // 
-            // btn_add
-            // 
-            btn_add.BackColor = Color.Transparent;
-            btn_add.BackgroundImageLayout = ImageLayout.Center;
-            btn_add.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_add.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_add.FlatStyle = FlatStyle.Flat;
-            btn_add.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btn_add.ForeColor = Color.White;
-            btn_add.Image = (Image)resources.GetObject("btn_add.Image");
-            btn_add.Location = new Point(85, 68);
-            btn_add.Name = "btn_add";
-            btn_add.Size = new Size(49, 43);
-            btn_add.TabIndex = 18;
-            btn_add.UseVisualStyleBackColor = false;
-            // 
-            // btn_del
-            // 
-            btn_del.BackColor = Color.Transparent;
-            btn_del.BackgroundImageLayout = ImageLayout.Center;
-            btn_del.FlatAppearance.MouseDownBackColor = Color.Maroon;
-            btn_del.FlatAppearance.MouseOverBackColor = Color.FromArgb(192, 0, 0);
-            btn_del.FlatStyle = FlatStyle.Flat;
-            btn_del.Font = new Font("Arial", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btn_del.ForeColor = Color.White;
-            btn_del.Image = (Image)resources.GetObject("btn_del.Image");
-            btn_del.Location = new Point(159, 68);
-            btn_del.Name = "btn_del";
-            btn_del.Size = new Size(49, 43);
-            btn_del.TabIndex = 19;
-            btn_del.UseVisualStyleBackColor = false;
+            fontComboBoxInPanel.FormattingEnabled = true;
+            fontComboBoxInPanel.Location = new Point(20, 120);
+            fontComboBoxInPanel.Name = "fontComboBoxInPanel";
+            fontComboBoxInPanel.Size = new Size(197, 38);
+            fontComboBoxInPanel.TabIndex = 0;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
-            ClientSize = new Size(1308, 694);
+            ClientSize = new Size(1304, 694);
+            Controls.Add(textOptionsPanel);
             Controls.Add(trackBar1);
             Controls.Add(panel2);
             Controls.Add(panel1);
             Controls.Add(pic);
-            Controls.Add(TableLayoutPanel);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "EasyDraw";
-            Load += Form1_Load;
             panel1.ResumeLayout(false);
             panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)color_picker).EndInit();
@@ -664,9 +555,7 @@
             ((System.ComponentModel.ISupportInitialize)pic).EndInit();
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             textOptionsPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
-            TableLayoutPanel.ResumeLayout(false);
-            layersPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)fontSizeComboBoxInPanel).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -695,22 +584,14 @@
         private Button btn_undo;
         private Button btn_zoomin;
         private Button btn_zoomout;
-        private Button btn_layers;
         private Button btn_trg;
         private Button btn_back;
         private Panel textOptionsPanel;
-        private Panel TableLayoutPanel;
-        private ComboBox comboBox1;
+        private ComboBox fontComboBoxInPanel;
         private Button btn_b;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown fontSizeComboBoxInPanel;
         private Button btn_u;
         private Button btn_i;
-        private Button btn_vis;
-        private Button btn_down;
-        private Button btn_up;
-        private Button btn_del;
-        private Button btn_add;
-        private ListBox listBox1;
-        private Panel layersPanel;
+        private Button btn_addpic;
     }
 }
