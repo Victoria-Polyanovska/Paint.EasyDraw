@@ -16,6 +16,7 @@ namespace Paint_FinalProject
 
         private Point _startPoint;
         private bool _isDrawing = false;
+        private Shape _currentFreehandShape; 
 
         private HistoryManager _historyManager;
         public Form1()
@@ -69,11 +70,21 @@ namespace Paint_FinalProject
             if (!_isDrawing) return;
             _isDrawing = false;
 
-            var shape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+            Shape finalShape = null;
 
-            if (shape != null)
+            if (_currentToolIndex == 1 || _currentToolIndex == 2)
             {
-                var command = new DrawCommand(shape, _mainBitmap);
+                finalShape = _currentFreehandShape;
+                _currentFreehandShape = null; 
+            }
+            else
+            {
+                finalShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+            }
+
+            if (finalShape != null)
+            {
+                var command = new DrawCommand(finalShape, _mainBitmap);
                 _historyManager.ExecuteCommand(command, _graphics);
             }
 
@@ -84,21 +95,35 @@ namespace Paint_FinalProject
         {
             _isDrawing = true;
             _startPoint = e.Location;
+
+            if (_currentToolIndex == 1 || _currentToolIndex == 2)
+            {
+                _currentFreehandShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+            }
         }
 
         private void picture_MouseMove(object sender, MouseEventArgs e)
         {
             if (!_isDrawing) return;
 
+            if (_tempBitmap != null) _tempBitmap.Dispose(); 
             _tempBitmap = new Bitmap(_mainBitmap);
 
             using (Graphics g = Graphics.FromImage(_tempBitmap))
             {
-                var shape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+                if (_currentToolIndex == 1 || _currentToolIndex == 2)
+                {
+                    if (_currentFreehandShape is PenShape pen) pen.AddPoint(e.Location);
+                    else if (_currentFreehandShape is EraserTool eraser) eraser.AddPoint(e.Location);
 
-                shape?.Draw(g);
+                    _currentFreehandShape?.Draw(g);
+                }
+                else
+                {
+                    var shape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+                    shape?.Draw(g);
+                }
             }
-
             picture.Image = _tempBitmap;
         }
 
@@ -108,12 +133,16 @@ namespace Paint_FinalProject
 
             try
             {
-                Bitmap paletteBitmap = (Bitmap)color_picker.Image;
-                if (e.X >= 0 && e.X < paletteBitmap.Width && e.Y >= 0 && e.Y < paletteBitmap.Height)
+                using (Bitmap bmp = new Bitmap(color_picker.Width, color_picker.Height))
                 {
-                    Color pickedColor = paletteBitmap.GetPixel(e.X, e.Y);
-                    UpdateDrawingColor(pickedColor);
-                }
+                    color_picker.DrawToBitmap(bmp, new Rectangle(0, 0, color_picker.Width, color_picker.Height));
+
+                    if (e.X >= 0 && e.X < bmp.Width && e.Y >= 0 && e.Y < bmp.Height)
+                    {
+                        Color pickedColor = bmp.GetPixel(e.X, e.Y);
+                        UpdateDrawingColor(pickedColor);
+                    }
+                } 
             }
             catch (Exception ex)
             {
