@@ -252,5 +252,20 @@ namespace Paint_FinalProject
 
             panelTextOptions.Visible = !panelTextOptions.Visible;
         }
+
+        private void button_colors_Click(object sender, EventArgs e)
+        {
+            using (ColorDialog colorDialog = new ColorDialog())
+            {
+                colorDialog.Color = _currentColor;
+
+                colorDialog.FullOpen = true;
+
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    UpdateDrawingColor(colorDialog.Color);
+                }
+            }
+        }
     }
 }
