@@ -32,8 +32,26 @@ namespace Paint_FinalProject
             picture.Image = _mainBitmap;
 
             _historyManager = new HistoryManager(_mainBitmap);
-        }
 
+            if (color_picker != null && color_picker.Image != null)
+            {
+                if (!(color_picker.Image is Bitmap))
+                {
+                    color_picker.Image = new Bitmap(color_picker.Image);
+                }
+            }
+
+            UpdateDrawingColor(Color.Black);
+        }
+        private void UpdateDrawingColor(Color newColor)
+        {
+            _currentColor = newColor;
+
+            if (button_color != null)
+            {
+                button_color.BackColor = newColor;
+            }
+        }
         private void button_pen_Click(object sender, EventArgs e) => _currentToolIndex = 1;
 
         private void button_eraser_Click(object sender, EventArgs e) => _currentToolIndex = 2;
@@ -82,6 +100,31 @@ namespace Paint_FinalProject
             }
 
             picture.Image = _tempBitmap;
+        }
+
+        private void color_picker_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (color_picker.Image == null) return;
+
+            try
+            {
+                Bitmap paletteBitmap = (Bitmap)color_picker.Image;
+                if (e.X >= 0 && e.X < paletteBitmap.Width && e.Y >= 0 && e.Y < paletteBitmap.Height)
+                {
+                    Color pickedColor = paletteBitmap.GetPixel(e.X, e.Y);
+                    UpdateDrawingColor(pickedColor);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка вибору кольору: {ex.Message}", "Помилка",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            _currentThickness = trackBar1.Value;
         }
     }
 }
