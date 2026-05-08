@@ -107,6 +107,32 @@ namespace Paint_FinalProject
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
+        private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        {
+            
+            if (targetColor.ToArgb() == replacementColor.ToArgb()) return;
+
+            Stack<Point> pixels = new Stack<Point>();
+            pixels.Push(pt);
+
+            while (pixels.Count > 0)
+            {
+                Point a = pixels.Pop();
+
+                if (a.X < 0 || a.X >= bmp.Width || a.Y < 0 || a.Y >= bmp.Height)
+                    continue;
+
+                if (bmp.GetPixel(a.X, a.Y).ToArgb() == targetColor.ToArgb())
+                {
+                    bmp.SetPixel(a.X, a.Y, replacementColor);
+
+                    pixels.Push(new Point(a.X - 1, a.Y));
+                    pixels.Push(new Point(a.X + 1, a.Y));
+                    pixels.Push(new Point(a.X, a.Y - 1));
+                    pixels.Push(new Point(a.X, a.Y + 1));
+                }
+            }
+        }
         private void button_pen_Click(object sender, EventArgs e) => _currentToolIndex = 1;
 
         private void button_eraser_Click(object sender, EventArgs e) => _currentToolIndex = 2;
@@ -161,13 +187,25 @@ namespace Paint_FinalProject
 
                     picture.Image = _mainBitmap;
                 }
-
                 _isDrawing = false;
-
                 return;
             }
+
+            if (_currentToolIndex == 8)
+            {
+                Color targetColor = _mainBitmap.GetPixel(e.X, e.Y);
+
+                FloodFill(_mainBitmap, e.Location, targetColor, _currentColor);
+
+                picture.Image = _mainBitmap;
+
+                _isDrawing = false;
+                return;
+            }
+
             _isDrawing = true;
             _startPoint = e.Location;
+
             if (_currentToolIndex == 1 || _currentToolIndex == 2)
             {
                 _currentFreehandShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
@@ -267,5 +305,7 @@ namespace Paint_FinalProject
                 }
             }
         }
+
+        private void button_fill_Click(object sender, EventArgs e) => _currentToolIndex = 8;
     }
 }
