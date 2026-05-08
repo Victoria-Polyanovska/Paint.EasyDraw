@@ -1,6 +1,7 @@
 using Paint_FinalProject.Commands;
 using Paint_FinalProject.ToolsLibrary;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace Paint_FinalProject
 {
@@ -16,7 +17,11 @@ namespace Paint_FinalProject
 
         private Point _startPoint;
         private bool _isDrawing = false;
-        private Shape _currentFreehandShape; 
+        private Shape _currentFreehandShape;
+
+        private bool _isBold = false;
+        private bool _isItalic = false;
+        private bool _isUnderline = false;
 
         private HistoryManager _historyManager;
         public Form1()
@@ -26,6 +31,7 @@ namespace Paint_FinalProject
         }
         private void SetupCanvas()
         {
+            panelTextOptions.Visible = false;
             _mainBitmap = new Bitmap(picture.Width, picture.Height);
             _graphics = Graphics.FromImage(_mainBitmap);
             _graphics.Clear(Color.White);
@@ -41,8 +47,34 @@ namespace Paint_FinalProject
                     color_picker.Image = new Bitmap(color_picker.Image);
                 }
             }
+            foreach (FontFamily font in FontFamily.Families)
+            {
+                comboBoxFonts.Items.Add(font.Name);
+            }
+
+            if (comboBoxFonts.Items.Contains("Arial"))
+            {
+                comboBoxFonts.SelectedItem = "Arial";
+            }
+            else if (comboBoxFonts.Items.Count > 0)
+            {
+                comboBoxFonts.SelectedIndex = 0;
+            }
 
             UpdateDrawingColor(Color.Black);
+        }
+        private Font GetCurrentFont()
+        {
+            string fontName = comboBoxFonts.SelectedItem?.ToString() ?? "Arial";
+            float fontSize = (float)numericFontSize.Value;
+
+            FontStyle style = FontStyle.Regular;
+
+            if (_isBold) style |= FontStyle.Bold;
+            if (_isItalic) style |= FontStyle.Italic;
+            if (_isUnderline) style |= FontStyle.Underline;
+
+            return new Font(fontName, fontSize, style);
         }
         private void UpdateDrawingColor(Color newColor)
         {
@@ -52,6 +84,28 @@ namespace Paint_FinalProject
             {
                 button_color.BackColor = newColor;
             }
+        }
+        private string ShowTextInputDialog()
+        {
+            Form prompt = new Form()
+            {
+                Width = 350,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "Введіть текст для малювання",
+                StartPosition = FormStartPosition.CenterParent,
+                MaximizeBox = false
+            };
+
+            TextBox textBox = new TextBox() { Left = 20, Top = 20, Width = 290 };
+
+            Button confirmation = new Button() { Text = "ОК", Left = 210, Width = 100, Top = 60, DialogResult = DialogResult.OK };
+
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(confirmation);
+            prompt.AcceptButton = confirmation;
+
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
         private void button_pen_Click(object sender, EventArgs e) => _currentToolIndex = 1;
 
@@ -75,7 +129,7 @@ namespace Paint_FinalProject
             if (_currentToolIndex == 1 || _currentToolIndex == 2)
             {
                 finalShape = _currentFreehandShape;
-                _currentFreehandShape = null; 
+                _currentFreehandShape = null;
             }
             else
             {
@@ -93,9 +147,27 @@ namespace Paint_FinalProject
 
         private void picture_MouseDown(object sender, MouseEventArgs e)
         {
+            if (_currentToolIndex == 7)
+            {
+                string enteredText = ShowTextInputDialog();
+
+                if (!string.IsNullOrEmpty(enteredText))
+                {
+                    Font currentFont = GetCurrentFont();
+                    Shape textShape = new TextShape(e.Location, enteredText, currentFont, _currentColor);
+
+                    var command = new DrawCommand(textShape, _mainBitmap);
+                    _historyManager.ExecuteCommand(command, _graphics);
+
+                    picture.Image = _mainBitmap;
+                }
+
+                _isDrawing = false;
+
+                return;
+            }
             _isDrawing = true;
             _startPoint = e.Location;
-
             if (_currentToolIndex == 1 || _currentToolIndex == 2)
             {
                 _currentFreehandShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
@@ -106,7 +178,7 @@ namespace Paint_FinalProject
         {
             if (!_isDrawing) return;
 
-            if (_tempBitmap != null) _tempBitmap.Dispose(); 
+            if (_tempBitmap != null) _tempBitmap.Dispose();
             _tempBitmap = new Bitmap(_mainBitmap);
 
             using (Graphics g = Graphics.FromImage(_tempBitmap))
@@ -142,7 +214,7 @@ namespace Paint_FinalProject
                         Color pickedColor = bmp.GetPixel(e.X, e.Y);
                         UpdateDrawingColor(pickedColor);
                     }
-                } 
+                }
             }
             catch (Exception ex)
             {
@@ -154,6 +226,31 @@ namespace Paint_FinalProject
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             _currentThickness = trackBar1.Value;
+        }
+
+        private void button_b_Click(object sender, EventArgs e)
+        {
+            _isBold = !_isBold;
+            button_b.BackColor = _isBold ? Color.LightGray : SystemColors.Control;
+        }
+
+        private void button_i_Click(object sender, EventArgs e)
+        {
+            _isItalic = !_isItalic;
+            button_i.BackColor = _isItalic ? Color.LightGray : SystemColors.Control;
+        }
+
+        private void button_u_Click(object sender, EventArgs e)
+        {
+            _isUnderline = !_isUnderline;
+            button_u.BackColor = _isUnderline ? Color.LightGray : SystemColors.Control;
+        }
+
+        private void button_text_Click(object sender, EventArgs e)
+        {
+            _currentToolIndex = 7;
+
+            panelTextOptions.Visible = !panelTextOptions.Visible;
         }
     }
 }
