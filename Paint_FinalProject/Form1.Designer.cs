@@ -51,6 +51,7 @@
             button_undo = new Button();
             picture = new PictureBox();
             panel3 = new Panel();
+            listBoxHistory = new ListBox();
             trackBar1 = new TrackBar();
             panelTextOptions = new Panel();
             numericFontSize = new NumericUpDown();
@@ -407,12 +408,22 @@
             // panel3
             // 
             panel3.BackColor = Color.FromArgb(64, 64, 64);
+            panel3.Controls.Add(listBoxHistory);
             panel3.Controls.Add(trackBar1);
             panel3.Controls.Add(picture);
             panel3.Location = new Point(5, 111);
             panel3.Name = "panel3";
             panel3.Size = new Size(1166, 521);
             panel3.TabIndex = 1;
+            // 
+            // listBoxHistory
+            // 
+            listBoxHistory.FormattingEnabled = true;
+            listBoxHistory.ItemHeight = 30;
+            listBoxHistory.Location = new Point(961, 90);
+            listBoxHistory.Name = "listBoxHistory";
+            listBoxHistory.Size = new Size(180, 424);
+            listBoxHistory.TabIndex = 4;
             // 
             // trackBar1
             // 
@@ -565,5 +576,6 @@
         private Button button_i;
         private Button button_b;
         private NumericUpDown numericFontSize;
+        private ListBox listBoxHistory;
     }
 }

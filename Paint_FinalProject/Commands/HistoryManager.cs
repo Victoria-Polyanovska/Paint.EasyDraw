@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq; 
 
 namespace Paint_FinalProject.Commands
 {
@@ -18,7 +19,7 @@ namespace Paint_FinalProject.Commands
         {
             command.Execute(g);
             _undoStack.Push(command);
-            _redoStack.Clear(); 
+            _redoStack.Clear();
         }
 
         public void Undo()
@@ -40,8 +41,34 @@ namespace Paint_FinalProject.Commands
                 _undoStack.Push(command);
             }
         }
+        public void ClearHistory()
+        {
+            _undoStack.Clear();
+            _redoStack.Clear();
+        }
 
-        public bool CanUndo => _undoStack.Count > 0;
-        public bool CanRedo => _redoStack.Count > 0;
+        public List<string> GetHistoryNames()
+        {
+            List<string> displayNames = new List<string>();
+            var commands = _undoStack.ToList(); 
+
+            int i = 0;
+            while (i < commands.Count)
+            {
+                string currentName = commands[i].Name;
+                int count = 0;
+
+                while (i < commands.Count && commands[i].Name == currentName)
+                {
+                    count++;
+                    i++;
+                }
+
+                string displayName = count > 1 ? $"{currentName} ({count})" : currentName;
+                displayNames.Add(displayName);
+            }
+
+            return displayNames;
+        }
     }
 }

@@ -173,10 +173,13 @@ namespace Paint_FinalProject
 
             if (finalShape != null)
             {
-                var command = new DrawCommand(finalShape, _mainBitmap);
+                string actionName = GetToolName(_currentToolIndex);
+
+                var command = new DrawCommand(finalShape, _mainBitmap, actionName);
                 _historyManager.ExecuteCommand(command, _graphics);
 
                 picture.Image = _mainBitmap;
+                RefreshHistoryList(); 
             }
         }
 
@@ -191,10 +194,11 @@ namespace Paint_FinalProject
                     Font currentFont = GetCurrentFont();
                     Shape textShape = new TextShape(e.Location, enteredText, currentFont, _currentColor);
 
-                    var command = new DrawCommand(textShape, _mainBitmap);
+                    var command = new DrawCommand(textShape, _mainBitmap, "Текст");
                     _historyManager.ExecuteCommand(command, _graphics);
 
                     picture.Image = _mainBitmap;
+                    RefreshHistoryList(); 
                 }
                 _isDrawing = false;
                 return;
@@ -207,10 +211,11 @@ namespace Paint_FinalProject
                 FloodFill(_mainBitmap, e.Location, targetColor, _currentColor, 100);
 
                 Bitmap currentSate = new Bitmap(_mainBitmap);
-                var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap);
+                var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Заливка");
                 _historyManager.ExecuteCommand(command, _graphics);
 
                 picture.Image = _mainBitmap;
+                RefreshHistoryList(); 
 
                 _isDrawing = false;
                 return;
@@ -334,17 +339,12 @@ namespace Paint_FinalProject
                     {
                         using (Image loadedImage = Image.FromFile(openFileDialog.FileName))
                         {
-                            Bitmap newCanvas = new Bitmap(picture.Width, picture.Height);
-
-                            using (Graphics g = Graphics.FromImage(newCanvas))
-                            {
-                                g.DrawImage(loadedImage, 0, 0, picture.Width, picture.Height);
-                            }
-                            _mainBitmap = newCanvas;
-                            _graphics = Graphics.FromImage(_mainBitmap);
-                            picture.Image = _mainBitmap;
-                            var command = new DrawCommand(new ImageShape(new Point(0, 0), _mainBitmap), _mainBitmap);
+                            _graphics.DrawImage(loadedImage, 0, 0, picture.Width, picture.Height);
+                            Bitmap currentSate = new Bitmap(_mainBitmap);
+                            var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap);
                             _historyManager.ExecuteCommand(command, _graphics);
+
+                            picture.Image = _mainBitmap;
                         }
                     }
                     catch (Exception ex)
@@ -353,7 +353,8 @@ namespace Paint_FinalProject
                     }
                 }
             }
-        }
+            }
+        
 
         private void button_save_Click(object sender, EventArgs e)
         {
@@ -383,16 +384,15 @@ namespace Paint_FinalProject
 
         private void button_clear_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Ви впевнені, що хочете очистити полотно?", "Очистка",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Ви впевнені, що хочете очистити полотно та історію дій?", "Повна очистка",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 _graphics.Clear(Color.White);
 
-                Bitmap emptyState = new Bitmap(_mainBitmap);
-                var command = new DrawCommand(new ImageShape(new Point(0, 0), emptyState), _mainBitmap);
-                _historyManager.ExecuteCommand(command, _graphics);
+                _historyManager.ClearHistory();
 
                 picture.Image = _mainBitmap;
+                RefreshHistoryList();
             }
         }
 
@@ -401,6 +401,7 @@ namespace Paint_FinalProject
             _historyManager.Undo();
 
             picture.Image = _mainBitmap;
+            RefreshHistoryList();
         }
 
         private void button_redo_Click(object sender, EventArgs e)
@@ -408,6 +409,7 @@ namespace Paint_FinalProject
             _historyManager.Redo(_graphics);
 
             picture.Image = _mainBitmap;
+            RefreshHistoryList();
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -428,6 +430,31 @@ namespace Paint_FinalProject
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+        private void RefreshHistoryList()
+        {
+            listBoxHistory.Items.Clear();
+            var names = _historyManager.GetHistoryNames();
+
+            foreach (var name in names)
+            {
+                listBoxHistory.Items.Add(name);
+            }
+        }
+        private string GetToolName(int index)
+        {
+            return index switch
+            {
+                1 => "Олівець",
+                2 => "Гумка",
+                3 => "Еліпс",
+                4 => "Прямокутник",
+                5 => "Лінія",
+                6 => "Трикутник",
+                7 => "Текст",
+                8 => "Заливка",
+                _ => "Малювання"
+            };
         }
     }
 }

@@ -8,10 +8,13 @@ namespace Paint_FinalProject.Commands
         private readonly Shape _shape;
         private readonly Bitmap _previousState;
 
-        public DrawCommand(Shape shape, Bitmap currentBitmap)
+        public string Name { get; }
+
+        public DrawCommand(Shape shape, Bitmap currentBitmap, string actionName = "Малювання")
         {
             _shape = shape;
             _previousState = new Bitmap(currentBitmap);
+            Name = actionName; 
         }
 
         public void Execute(Graphics g)
