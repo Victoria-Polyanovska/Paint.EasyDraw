@@ -343,7 +343,7 @@ namespace Paint_FinalProject
                             _mainBitmap = newCanvas;
                             _graphics = Graphics.FromImage(_mainBitmap);
                             picture.Image = _mainBitmap;
-                            var command = new DrawCommand(new ImageShape(new Point(0, 0), _mainBitmap), _mainBitmap);
+                            var command = new DrawCommand(new ImageShape(new Point(0, 0), _mainBitmap), _mainBitmap);
                             _historyManager.ExecuteCommand(command, _graphics);
                         }
                     }
@@ -352,6 +352,47 @@ namespace Paint_FinalProject
                         MessageBox.Show($"Помилка: {ex.Message}");
                     }
                 }
+            }
+        }
+
+        private void button_save_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp";
+                saveFileDialog.Title = "Зберегти ваш малюнок";
+                saveFileDialog.FileName = "Малюнок_Paint"; 
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        _mainBitmap.Save(saveFileDialog.FileName);
+
+                        MessageBox.Show("Малюнок успішно збережено!", "Успіх",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Не вдалося зберегти малюнок: {ex.Message}", "Помилка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void button_clear_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Ви впевнені, що хочете очистити полотно?", "Очистка",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                _graphics.Clear(Color.White);
+
+                Bitmap emptyState = new Bitmap(_mainBitmap);
+                var command = new DrawCommand(new ImageShape(new Point(0, 0), emptyState), _mainBitmap);
+                _historyManager.ExecuteCommand(command, _graphics);
+
+                picture.Image = _mainBitmap;
             }
         }
     }
