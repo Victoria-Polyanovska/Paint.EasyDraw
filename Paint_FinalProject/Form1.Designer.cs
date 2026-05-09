@@ -44,29 +44,32 @@
             button_eraser = new Button();
             button_pen = new Button();
             panel2 = new Panel();
-            button5 = new Button();
-            button4 = new Button();
+            labelZoomPercent = new Label();
+            trackBarZoom = new TrackBar();
+            button_minus = new Button();
+            button_plus = new Button();
             button3 = new Button();
             button_redo = new Button();
             button_undo = new Button();
-            picture = new PictureBox();
-            panel3 = new Panel();
-            listBoxHistory = new ListBox();
-            trackBar1 = new TrackBar();
             panelTextOptions = new Panel();
             numericFontSize = new NumericUpDown();
             comboBoxFonts = new ComboBox();
             button_u = new Button();
             button_i = new Button();
             button_b = new Button();
+            picture = new PictureBox();
+            trackBar1 = new TrackBar();
+            listBoxHistory = new ListBox();
+            panel3 = new Panel();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)color_picker).BeginInit();
             panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picture).BeginInit();
-            panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackBarZoom).BeginInit();
             panelTextOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericFontSize).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picture).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            panel3.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -306,8 +309,10 @@
             // panel2
             // 
             panel2.BackColor = Color.FromArgb(64, 64, 64);
-            panel2.Controls.Add(button5);
-            panel2.Controls.Add(button4);
+            panel2.Controls.Add(labelZoomPercent);
+            panel2.Controls.Add(trackBarZoom);
+            panel2.Controls.Add(button_minus);
+            panel2.Controls.Add(button_plus);
             panel2.Controls.Add(button3);
             panel2.Controls.Add(button_redo);
             panel2.Controls.Add(button_undo);
@@ -316,35 +321,59 @@
             panel2.Size = new Size(1166, 52);
             panel2.TabIndex = 1;
             // 
-            // button5
+            // labelZoomPercent
             // 
-            button5.BackColor = Color.Transparent;
-            button5.BackgroundImage = Properties.Resources.free_icon_zoom_out_17807703;
-            button5.BackgroundImageLayout = ImageLayout.Center;
-            button5.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
-            button5.FlatAppearance.MouseOverBackColor = Color.Maroon;
-            button5.FlatStyle = FlatStyle.Flat;
-            button5.ForeColor = Color.White;
-            button5.Location = new Point(73, 7);
-            button5.Name = "button5";
-            button5.Size = new Size(64, 36);
-            button5.TabIndex = 16;
-            button5.UseVisualStyleBackColor = false;
+            labelZoomPercent.AutoSize = true;
+            labelZoomPercent.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            labelZoomPercent.ForeColor = Color.White;
+            labelZoomPercent.Location = new Point(143, 7);
+            labelZoomPercent.Name = "labelZoomPercent";
+            labelZoomPercent.Size = new Size(84, 38);
+            labelZoomPercent.TabIndex = 18;
+            labelZoomPercent.Text = "100%";
             // 
-            // button4
+            // trackBarZoom
             // 
-            button4.BackColor = Color.Transparent;
-            button4.BackgroundImage = Properties.Resources.free_icon_zoom_increasing_symbol_54862;
-            button4.BackgroundImageLayout = ImageLayout.Center;
-            button4.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
-            button4.FlatAppearance.MouseOverBackColor = Color.Maroon;
-            button4.FlatStyle = FlatStyle.Flat;
-            button4.ForeColor = Color.White;
-            button4.Location = new Point(3, 7);
-            button4.Name = "button4";
-            button4.Size = new Size(64, 36);
-            button4.TabIndex = 15;
-            button4.UseVisualStyleBackColor = false;
+            trackBarZoom.Location = new Point(233, 7);
+            trackBarZoom.Maximum = 20;
+            trackBarZoom.Minimum = 2;
+            trackBarZoom.Name = "trackBarZoom";
+            trackBarZoom.Size = new Size(168, 69);
+            trackBarZoom.TabIndex = 17;
+            trackBarZoom.Value = 10;
+            trackBarZoom.Scroll += trackBarZoom_Scroll;
+            // 
+            // button_minus
+            // 
+            button_minus.BackColor = Color.Transparent;
+            button_minus.BackgroundImage = Properties.Resources.free_icon_zoom_out_17807703;
+            button_minus.BackgroundImageLayout = ImageLayout.Center;
+            button_minus.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_minus.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_minus.FlatStyle = FlatStyle.Flat;
+            button_minus.ForeColor = Color.White;
+            button_minus.Location = new Point(73, 7);
+            button_minus.Name = "button_minus";
+            button_minus.Size = new Size(64, 36);
+            button_minus.TabIndex = 16;
+            button_minus.UseVisualStyleBackColor = false;
+            button_minus.Click += button_minus_Click;
+            // 
+            // button_plus
+            // 
+            button_plus.BackColor = Color.Transparent;
+            button_plus.BackgroundImage = Properties.Resources.free_icon_zoom_increasing_symbol_54862;
+            button_plus.BackgroundImageLayout = ImageLayout.Center;
+            button_plus.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_plus.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_plus.FlatStyle = FlatStyle.Flat;
+            button_plus.ForeColor = Color.White;
+            button_plus.Location = new Point(3, 7);
+            button_plus.Name = "button_plus";
+            button_plus.Size = new Size(64, 36);
+            button_plus.TabIndex = 15;
+            button_plus.UseVisualStyleBackColor = false;
+            button_plus.Click += button_plus_Click;
             // 
             // button3
             // 
@@ -392,46 +421,6 @@
             button_undo.TabIndex = 13;
             button_undo.UseVisualStyleBackColor = false;
             button_undo.Click += button_undo_Click;
-            // 
-            // picture
-            // 
-            picture.BackColor = Color.White;
-            picture.Location = new Point(3, 0);
-            picture.Name = "picture";
-            picture.Size = new Size(926, 518);
-            picture.TabIndex = 2;
-            picture.TabStop = false;
-            picture.MouseDown += picture_MouseDown;
-            picture.MouseMove += picture_MouseMove;
-            picture.MouseUp += picture_MouseUp;
-            // 
-            // panel3
-            // 
-            panel3.BackColor = Color.FromArgb(64, 64, 64);
-            panel3.Controls.Add(listBoxHistory);
-            panel3.Controls.Add(trackBar1);
-            panel3.Controls.Add(picture);
-            panel3.Location = new Point(5, 111);
-            panel3.Name = "panel3";
-            panel3.Size = new Size(1166, 521);
-            panel3.TabIndex = 1;
-            // 
-            // listBoxHistory
-            // 
-            listBoxHistory.FormattingEnabled = true;
-            listBoxHistory.ItemHeight = 30;
-            listBoxHistory.Location = new Point(961, 90);
-            listBoxHistory.Name = "listBoxHistory";
-            listBoxHistory.Size = new Size(180, 424);
-            listBoxHistory.TabIndex = 4;
-            // 
-            // trackBar1
-            // 
-            trackBar1.Location = new Point(935, 15);
-            trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(225, 69);
-            trackBar1.TabIndex = 3;
-            trackBar1.Scroll += trackBar1_Scroll;
             // 
             // panelTextOptions
             // 
@@ -519,6 +508,47 @@
             button_b.UseVisualStyleBackColor = false;
             button_b.Click += button_b_Click;
             // 
+            // picture
+            // 
+            picture.BackColor = Color.White;
+            picture.Location = new Point(3, 0);
+            picture.Name = "picture";
+            picture.Size = new Size(926, 518);
+            picture.TabIndex = 2;
+            picture.TabStop = false;
+            picture.Paint += picture_Paint;
+            picture.MouseDown += picture_MouseDown;
+            picture.MouseMove += picture_MouseMove;
+            picture.MouseUp += picture_MouseUp;
+            // 
+            // trackBar1
+            // 
+            trackBar1.Location = new Point(935, 15);
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(225, 69);
+            trackBar1.TabIndex = 3;
+            trackBar1.Scroll += trackBar1_Scroll;
+            // 
+            // listBoxHistory
+            // 
+            listBoxHistory.FormattingEnabled = true;
+            listBoxHistory.ItemHeight = 30;
+            listBoxHistory.Location = new Point(961, 90);
+            listBoxHistory.Name = "listBoxHistory";
+            listBoxHistory.Size = new Size(180, 424);
+            listBoxHistory.TabIndex = 4;
+            // 
+            // panel3
+            // 
+            panel3.BackColor = Color.FromArgb(64, 64, 64);
+            panel3.Controls.Add(listBoxHistory);
+            panel3.Controls.Add(trackBar1);
+            panel3.Controls.Add(picture);
+            panel3.Location = new Point(5, 111);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(1166, 521);
+            panel3.TabIndex = 1;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
@@ -531,16 +561,18 @@
             Controls.Add(panel3);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "Paint";
             panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)color_picker).EndInit();
             panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)picture).EndInit();
-            panel3.ResumeLayout(false);
-            panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarZoom).EndInit();
             panelTextOptions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)numericFontSize).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picture).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            panel3.ResumeLayout(false);
+            panel3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -548,8 +580,6 @@
 
         private Panel panel1;
         private Panel panel2;
-        private PictureBox picture;
-        private Panel panel3;
         private Button button_eraser;
         private Button button_pen;
         private Button button_color;
@@ -564,18 +594,22 @@
         private Button button_colors;
         private Button button_clear;
         private Button button_save;
-        private Button button5;
-        private Button button4;
+        private Button button_minus;
+        private Button button_plus;
         private Button button3;
         private Button button_redo;
         private Button button_undo;
-        private TrackBar trackBar1;
         private Panel panelTextOptions;
         private ComboBox comboBoxFonts;
         private Button button_u;
         private Button button_i;
         private Button button_b;
         private NumericUpDown numericFontSize;
+        private PictureBox picture;
+        private TrackBar trackBar1;
         private ListBox listBoxHistory;
+        private Panel panel3;
+        private TrackBar trackBarZoom;
+        private Label labelZoomPercent;
     }
 }

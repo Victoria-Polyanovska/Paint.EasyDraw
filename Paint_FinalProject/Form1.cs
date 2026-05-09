@@ -23,6 +23,9 @@ namespace Paint_FinalProject
         private bool _isItalic = false;
         private bool _isUnderline = false;
 
+        private float _zoomFactor = 1.0f;
+        private PointF _offset = new PointF(0, 0);
+
         private HistoryManager _historyManager;
         public Form1()
         {
@@ -159,6 +162,7 @@ namespace Paint_FinalProject
             if (!_isDrawing) return;
             _isDrawing = false;
 
+            Point canvasPoint = GetAdjustedPoint(e.Location);
             Shape finalShape = null;
 
             if (_currentToolIndex == 1 || _currentToolIndex == 2)
@@ -168,7 +172,7 @@ namespace Paint_FinalProject
             }
             else
             {
-                finalShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+                finalShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, canvasPoint, _currentColor, _currentThickness);
             }
 
             if (finalShape != null)
@@ -178,27 +182,28 @@ namespace Paint_FinalProject
                 var command = new DrawCommand(finalShape, _mainBitmap, actionName);
                 _historyManager.ExecuteCommand(command, _graphics);
 
-                picture.Image = _mainBitmap;
-                RefreshHistoryList(); 
+                RefreshHistoryList();
+                picture.Invalidate();
             }
         }
 
         private void picture_MouseDown(object sender, MouseEventArgs e)
         {
+            Point canvasPoint = GetAdjustedPoint(e.Location);
+
             if (_currentToolIndex == 7)
             {
                 string enteredText = ShowTextInputDialog();
-
                 if (!string.IsNullOrEmpty(enteredText))
                 {
                     Font currentFont = GetCurrentFont();
-                    Shape textShape = new TextShape(e.Location, enteredText, currentFont, _currentColor);
+                    Shape textShape = new TextShape(canvasPoint, enteredText, currentFont, _currentColor);
 
                     var command = new DrawCommand(textShape, _mainBitmap, "Текст");
                     _historyManager.ExecuteCommand(command, _graphics);
 
-                    picture.Image = _mainBitmap;
-                    RefreshHistoryList(); 
+                    RefreshHistoryList();
+                    picture.Invalidate();
                 }
                 _isDrawing = false;
                 return;
@@ -206,27 +211,28 @@ namespace Paint_FinalProject
 
             if (_currentToolIndex == 8)
             {
-                Color targetColor = _mainBitmap.GetPixel(e.X, e.Y);
+                if (canvasPoint.X >= 0 && canvasPoint.X < _mainBitmap.Width && canvasPoint.Y >= 0 && canvasPoint.Y < _mainBitmap.Height)
+                {
+                    Color targetColor = _mainBitmap.GetPixel(canvasPoint.X, canvasPoint.Y);
+                    FloodFill(_mainBitmap, canvasPoint, targetColor, _currentColor, 100);
 
-                FloodFill(_mainBitmap, e.Location, targetColor, _currentColor, 100);
+                    Bitmap currentSate = new Bitmap(_mainBitmap);
+                    var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Заливка");
+                    _historyManager.ExecuteCommand(command, _graphics);
 
-                Bitmap currentSate = new Bitmap(_mainBitmap);
-                var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Заливка");
-                _historyManager.ExecuteCommand(command, _graphics);
-
-                picture.Image = _mainBitmap;
-                RefreshHistoryList(); 
-
+                    RefreshHistoryList();
+                    picture.Invalidate();
+                }
                 _isDrawing = false;
                 return;
             }
 
             _isDrawing = true;
-            _startPoint = e.Location;
+            _startPoint = canvasPoint;
 
             if (_currentToolIndex == 1 || _currentToolIndex == 2)
             {
-                _currentFreehandShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
+                _currentFreehandShape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, canvasPoint, _currentColor, _currentThickness);
             }
         }
 
@@ -234,25 +240,28 @@ namespace Paint_FinalProject
         {
             if (!_isDrawing) return;
 
+            Point canvasPoint = GetAdjustedPoint(e.Location);
+
             if (_tempBitmap != null) _tempBitmap.Dispose();
             _tempBitmap = new Bitmap(_mainBitmap);
 
             using (Graphics g = Graphics.FromImage(_tempBitmap))
             {
+                var shape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, canvasPoint, _currentColor, _currentThickness);
+
                 if (_currentToolIndex == 1 || _currentToolIndex == 2)
                 {
-                    if (_currentFreehandShape is PenShape pen) pen.AddPoint(e.Location);
-                    else if (_currentFreehandShape is EraserTool eraser) eraser.AddPoint(e.Location);
-
+                    if (_currentFreehandShape is PenShape pen) pen.AddPoint(canvasPoint);
+                    else if (_currentFreehandShape is EraserTool eraser) eraser.AddPoint(canvasPoint);
                     _currentFreehandShape?.Draw(g);
                 }
                 else
                 {
-                    var shape = ShapeFactory.CreateShape(_currentToolIndex, _startPoint, e.Location, _currentColor, _currentThickness);
                     shape?.Draw(g);
                 }
             }
-            picture.Image = _tempBitmap;
+
+            picture.Invalidate();
         }
 
         private void color_picker_MouseDown(object sender, MouseEventArgs e)
@@ -353,30 +362,33 @@ namespace Paint_FinalProject
                     }
                 }
             }
-            }
-        
+        }
+
 
         private void button_save_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp";
-                saveFileDialog.Title = "Зберегти ваш малюнок";
-                saveFileDialog.FileName = "Малюнок_Paint";
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                openFileDialog.Filter = "Зображення (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        _mainBitmap.Save(saveFileDialog.FileName);
+                        using (Image loadedImage = Image.FromFile(openFileDialog.FileName))
+                        {
+                            _graphics.DrawImage(loadedImage, 0, 0, _mainBitmap.Width, _mainBitmap.Height);
 
-                        MessageBox.Show("Малюнок успішно збережено!", "Успіх",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            Bitmap currentSate = new Bitmap(_mainBitmap);
+                            var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Додано фото");
+                            _historyManager.ExecuteCommand(command, _graphics);
+
+                            RefreshHistoryList();
+                            picture.Invalidate(); 
+                        }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Не вдалося зберегти малюнок: {ex.Message}", "Помилка",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Помилка: {ex.Message}");
                     }
                 }
             }
@@ -399,16 +411,14 @@ namespace Paint_FinalProject
         private void button_undo_Click(object sender, EventArgs e)
         {
             _historyManager.Undo();
-
-            picture.Image = _mainBitmap;
+            picture.Invalidate();
             RefreshHistoryList();
         }
 
         private void button_redo_Click(object sender, EventArgs e)
         {
             _historyManager.Redo(_graphics);
-
-            picture.Image = _mainBitmap;
+            picture.Invalidate();
             RefreshHistoryList();
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -455,6 +465,81 @@ namespace Paint_FinalProject
                 8 => "Заливка",
                 _ => "Малювання"
             };
+        }
+
+        private void button_plus_Click(object sender, EventArgs e)
+        {
+            if (trackBarZoom.Value + 2 <= trackBarZoom.Maximum)
+            {
+                UpdateZoom((trackBarZoom.Value + 2) / 10.0f);
+            }
+        }
+
+        private void button_minus_Click(object sender, EventArgs e)
+        {
+            if (trackBarZoom.Value - 2 >= trackBarZoom.Minimum)
+            {
+                UpdateZoom((trackBarZoom.Value - 2) / 10.0f);
+            }
+        }
+        private Point GetAdjustedPoint(Point mousePoint)
+        {
+            return new Point(
+                (int)((mousePoint.X / _zoomFactor) - _offset.X),
+                (int)((mousePoint.Y / _zoomFactor) - _offset.Y)
+            );
+        }
+
+        private void picture_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            g.Clear(Color.White);
+
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+
+            using (var attributes = new System.Drawing.Imaging.ImageAttributes())
+            {
+                attributes.SetWrapMode(System.Drawing.Drawing2D.WrapMode.Clamp);
+
+                g.ScaleTransform(_zoomFactor, _zoomFactor);
+
+                if (_mainBitmap != null)
+                {
+                    Bitmap bitmapToDraw = _isDrawing ? _tempBitmap : _mainBitmap;
+
+                    if (bitmapToDraw != null)
+                    {
+                        g.DrawImage(
+                            bitmapToDraw,
+                            new Rectangle(0, 0, bitmapToDraw.Width, bitmapToDraw.Height),
+                            0, 0, bitmapToDraw.Width, bitmapToDraw.Height,
+                            GraphicsUnit.Pixel,
+                            attributes
+                        );
+                    }
+                }
+            }
+        }
+        
+        private void UpdateZoom(float newFactor)
+        {
+            _zoomFactor = newFactor;
+
+            int trackBarValue = (int)(_zoomFactor * 10);
+            if (trackBarValue >= trackBarZoom.Minimum && trackBarValue <= trackBarZoom.Maximum)
+            {
+                trackBarZoom.Value = trackBarValue;
+            }
+
+            labelZoomPercent.Text = $"{(int)(_zoomFactor * 100)}%";
+
+            picture.Invalidate();
+        }
+
+        private void trackBarZoom_Scroll(object sender, EventArgs e)
+        {
+            UpdateZoom(trackBarZoom.Value / 10.0f);
         }
     }
 }
