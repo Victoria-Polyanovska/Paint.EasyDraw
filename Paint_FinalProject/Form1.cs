@@ -107,13 +107,14 @@ namespace Paint_FinalProject
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
-        private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor, int tolerance)
         {
-            
-            if (targetColor.ToArgb() == replacementColor.ToArgb()) return;
+            if (ColorsMatch(targetColor, replacementColor, tolerance)) return;
 
             Stack<Point> pixels = new Stack<Point>();
             pixels.Push(pt);
+
+            int replacementArgb = replacementColor.ToArgb();
 
             while (pixels.Count > 0)
             {
@@ -122,7 +123,9 @@ namespace Paint_FinalProject
                 if (a.X < 0 || a.X >= bmp.Width || a.Y < 0 || a.Y >= bmp.Height)
                     continue;
 
-                if (bmp.GetPixel(a.X, a.Y).ToArgb() == targetColor.ToArgb())
+                Color currentColor = bmp.GetPixel(a.X, a.Y);
+
+                if (currentColor.ToArgb() != replacementArgb && ColorsMatch(currentColor, targetColor, tolerance))
                 {
                     bmp.SetPixel(a.X, a.Y, replacementColor);
 
@@ -133,6 +136,12 @@ namespace Paint_FinalProject
                 }
             }
         }
+        private bool ColorsMatch(Color c1, Color c2, int tolerance)
+        {
+            int totalDiff = Math.Abs(c1.R - c2.R) + Math.Abs(c1.G - c2.G) + Math.Abs(c1.B - c2.B);
+            return totalDiff <= (tolerance * 3);
+        }
+
         private void button_pen_Click(object sender, EventArgs e) => _currentToolIndex = 1;
 
         private void button_eraser_Click(object sender, EventArgs e) => _currentToolIndex = 2;
@@ -166,9 +175,9 @@ namespace Paint_FinalProject
             {
                 var command = new DrawCommand(finalShape, _mainBitmap);
                 _historyManager.ExecuteCommand(command, _graphics);
-            }
 
-            picture.Image = _mainBitmap;
+                picture.Image = _mainBitmap;
+            }
         }
 
         private void picture_MouseDown(object sender, MouseEventArgs e)
@@ -195,7 +204,11 @@ namespace Paint_FinalProject
             {
                 Color targetColor = _mainBitmap.GetPixel(e.X, e.Y);
 
-                FloodFill(_mainBitmap, e.Location, targetColor, _currentColor);
+                FloodFill(_mainBitmap, e.Location, targetColor, _currentColor, 100);
+
+                Bitmap currentSate = new Bitmap(_mainBitmap);
+                var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap);
+                _historyManager.ExecuteCommand(command, _graphics);
 
                 picture.Image = _mainBitmap;
 
@@ -307,5 +320,39 @@ namespace Paint_FinalProject
         }
 
         private void button_fill_Click(object sender, EventArgs e) => _currentToolIndex = 8;
+
+        private void button_add_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Оберіть картинку";
+                openFileDialog.Filter = "Зображення (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (Image loadedImage = Image.FromFile(openFileDialog.FileName))
+                        {
+                            Bitmap newCanvas = new Bitmap(picture.Width, picture.Height);
+
+                            using (Graphics g = Graphics.FromImage(newCanvas))
+                            {
+                                g.DrawImage(loadedImage, 0, 0, picture.Width, picture.Height);
+                            }
+                            _mainBitmap = newCanvas;
+                            _graphics = Graphics.FromImage(_mainBitmap);
+                            picture.Image = _mainBitmap;
+                            var command = new DrawCommand(new ImageShape(new Point(0, 0), _mainBitmap), _mainBitmap);
+                            _historyManager.ExecuteCommand(command, _graphics);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Помилка: {ex.Message}");
+                    }
+                }
+            }
+        }
     }
 }
