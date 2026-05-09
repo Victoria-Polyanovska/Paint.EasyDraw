@@ -47,8 +47,8 @@
             button5 = new Button();
             button4 = new Button();
             button3 = new Button();
-            button2 = new Button();
-            button1 = new Button();
+            button_redo = new Button();
+            button_undo = new Button();
             picture = new PictureBox();
             panel3 = new Panel();
             trackBar1 = new TrackBar();
@@ -104,6 +104,7 @@
             button_clear.TabIndex = 12;
             button_clear.Text = "Clear";
             button_clear.UseVisualStyleBackColor = false;
+            button_clear.Click += button_clear_Click;
             // 
             // button_save
             // 
@@ -119,6 +120,7 @@
             button_save.TabIndex = 11;
             button_save.Text = "Save";
             button_save.UseVisualStyleBackColor = false;
+            button_save.Click += button_save_Click;
             // 
             // color_picker
             // 
@@ -145,6 +147,7 @@
             button_fill.Size = new Size(64, 67);
             button_fill.TabIndex = 8;
             button_fill.UseVisualStyleBackColor = false;
+            button_fill.Click += button_fill_Click;
             // 
             // button_color
             // 
@@ -169,6 +172,7 @@
             button_add.Size = new Size(64, 67);
             button_add.TabIndex = 9;
             button_add.UseVisualStyleBackColor = false;
+            button_add.Click += button_add_Click;
             // 
             // button_text
             // 
@@ -264,6 +268,7 @@
             button_colors.Size = new Size(64, 67);
             button_colors.TabIndex = 2;
             button_colors.UseVisualStyleBackColor = false;
+            button_colors.Click += button_colors_Click;
             // 
             // button_eraser
             // 
@@ -303,8 +308,8 @@
             panel2.Controls.Add(button5);
             panel2.Controls.Add(button4);
             panel2.Controls.Add(button3);
-            panel2.Controls.Add(button2);
-            panel2.Controls.Add(button1);
+            panel2.Controls.Add(button_redo);
+            panel2.Controls.Add(button_undo);
             panel2.Location = new Point(5, 638);
             panel2.Name = "panel2";
             panel2.Size = new Size(1166, 52);
@@ -355,35 +360,37 @@
             button3.Text = "Back to menu";
             button3.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // button_redo
             // 
-            button2.BackColor = Color.Transparent;
-            button2.BackgroundImage = Properties.Resources.free_icon_forward_9333903__1_;
-            button2.BackgroundImageLayout = ImageLayout.Center;
-            button2.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
-            button2.FlatAppearance.MouseOverBackColor = Color.Maroon;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.ForeColor = Color.White;
-            button2.Location = new Point(1096, 7);
-            button2.Name = "button2";
-            button2.Size = new Size(64, 36);
-            button2.TabIndex = 14;
-            button2.UseVisualStyleBackColor = false;
+            button_redo.BackColor = Color.Transparent;
+            button_redo.BackgroundImage = Properties.Resources.free_icon_forward_9333903__1_;
+            button_redo.BackgroundImageLayout = ImageLayout.Center;
+            button_redo.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_redo.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_redo.FlatStyle = FlatStyle.Flat;
+            button_redo.ForeColor = Color.White;
+            button_redo.Location = new Point(1096, 7);
+            button_redo.Name = "button_redo";
+            button_redo.Size = new Size(64, 36);
+            button_redo.TabIndex = 14;
+            button_redo.UseVisualStyleBackColor = false;
+            button_redo.Click += button_redo_Click;
             // 
-            // button1
+            // button_undo
             // 
-            button1.BackColor = Color.Transparent;
-            button1.BackgroundImage = Properties.Resources.free_icon_backward_318339__1_;
-            button1.BackgroundImageLayout = ImageLayout.Center;
-            button1.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
-            button1.FlatAppearance.MouseOverBackColor = Color.Maroon;
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(1026, 7);
-            button1.Name = "button1";
-            button1.Size = new Size(64, 36);
-            button1.TabIndex = 13;
-            button1.UseVisualStyleBackColor = false;
+            button_undo.BackColor = Color.Transparent;
+            button_undo.BackgroundImage = Properties.Resources.free_icon_backward_318339__1_;
+            button_undo.BackgroundImageLayout = ImageLayout.Center;
+            button_undo.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_undo.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_undo.FlatStyle = FlatStyle.Flat;
+            button_undo.ForeColor = Color.White;
+            button_undo.Location = new Point(1026, 7);
+            button_undo.Name = "button_undo";
+            button_undo.Size = new Size(64, 36);
+            button_undo.TabIndex = 13;
+            button_undo.UseVisualStyleBackColor = false;
+            button_undo.Click += button_undo_Click;
             // 
             // picture
             // 
@@ -549,8 +556,8 @@
         private Button button5;
         private Button button4;
         private Button button3;
-        private Button button2;
-        private Button button1;
+        private Button button_redo;
+        private Button button_undo;
         private TrackBar trackBar1;
         private Panel panelTextOptions;
         private ComboBox comboBoxFonts;

@@ -361,7 +361,7 @@ namespace Paint_FinalProject
             {
                 saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp";
                 saveFileDialog.Title = "Зберегти ваш малюнок";
-                saveFileDialog.FileName = "Малюнок_Paint"; 
+                saveFileDialog.FileName = "Малюнок_Paint";
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -394,6 +394,40 @@ namespace Paint_FinalProject
 
                 picture.Image = _mainBitmap;
             }
+        }
+
+        private void button_undo_Click(object sender, EventArgs e)
+        {
+            _historyManager.Undo();
+
+            picture.Image = _mainBitmap;
+        }
+
+        private void button_redo_Click(object sender, EventArgs e)
+        {
+            _historyManager.Redo(_graphics);
+
+            picture.Image = _mainBitmap;
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.Z))
+            {
+                button_undo_Click(null, null);
+                return true;
+            }
+            if (keyData == (Keys.Control | Keys.Y))
+            {
+                button_redo_Click(null, null);
+                return true;
+            }
+            if (keyData == (Keys.Control | Keys.S))
+            {
+                button_save_Click(null, null);
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }
