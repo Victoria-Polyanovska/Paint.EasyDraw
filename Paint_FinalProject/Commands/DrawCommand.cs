@@ -10,11 +10,13 @@ namespace Paint_FinalProject.Commands
 
         public string Name { get; }
 
+        public Shape Shape => _shape;
+
         public DrawCommand(Shape shape, Bitmap currentBitmap, string actionName = "Малювання")
         {
             _shape = shape;
             _previousState = new Bitmap(currentBitmap);
-            Name = actionName; 
+            Name = actionName;
         }
 
         public void Execute(Graphics g)

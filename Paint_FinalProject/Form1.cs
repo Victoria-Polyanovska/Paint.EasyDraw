@@ -1,7 +1,11 @@
+using Newtonsoft.Json;
 using Paint_FinalProject.Commands;
+using Paint_FinalProject.Models;
 using Paint_FinalProject.ToolsLibrary;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+
 
 namespace Paint_FinalProject
 {
@@ -11,6 +15,9 @@ namespace Paint_FinalProject
         private Bitmap _tempBitmap;
         private Graphics _graphics;
 
+        private string _projectName;
+        private string _projectPath;
+
         private int _currentToolIndex = 1;
         private Color _currentColor = Color.Black;
         private float _currentThickness = 2f;
@@ -19,52 +26,101 @@ namespace Paint_FinalProject
         private bool _isDrawing = false;
         private Shape _currentFreehandShape;
 
-        private bool _isBold = false;
-        private bool _isItalic = false;
-        private bool _isUnderline = false;
-
+        private bool _isBold = false, _isItalic = false, _isUnderline = false;
         private float _zoomFactor = 1.0f;
         private PointF _offset = new PointF(0, 0);
 
         private HistoryManager _historyManager;
-        public Form1()
+        public Form1(string projectName, string loadPath = null)
         {
             InitializeComponent();
-            SetupCanvas();
+            _projectName = projectName;
+            _projectPath = loadPath;
+
+            this.Text = $"Paint - {_projectName}";
+
+            SetupCanvas(); 
+
+            if (!string.IsNullOrEmpty(_projectPath))
+            {
+                LoadProjectData(_projectPath);
+            }
         }
+
         private void SetupCanvas()
         {
             panelTextOptions.Visible = false;
+
             _mainBitmap = new Bitmap(picture.Width, picture.Height);
             _graphics = Graphics.FromImage(_mainBitmap);
+            _graphics.SmoothingMode = SmoothingMode.AntiAlias;
             _graphics.Clear(Color.White);
 
             picture.Image = _mainBitmap;
-
             _historyManager = new HistoryManager(_mainBitmap);
 
-            if (color_picker != null && color_picker.Image != null)
+            if (color_picker?.Image != null && !(color_picker.Image is Bitmap))
             {
-                if (!(color_picker.Image is Bitmap))
-                {
-                    color_picker.Image = new Bitmap(color_picker.Image);
-                }
-            }
-            foreach (FontFamily font in FontFamily.Families)
-            {
-                comboBoxFonts.Items.Add(font.Name);
+                color_picker.Image = new Bitmap(color_picker.Image);
             }
 
-            if (comboBoxFonts.Items.Contains("Arial"))
-            {
-                comboBoxFonts.SelectedItem = "Arial";
-            }
-            else if (comboBoxFonts.Items.Count > 0)
-            {
-                comboBoxFonts.SelectedIndex = 0;
-            }
+            comboBoxFonts.Items.Clear();
+            foreach (FontFamily font in FontFamily.Families)
+                comboBoxFonts.Items.Add(font.Name);
+
+            comboBoxFonts.SelectedItem = comboBoxFonts.Items.Contains("Arial") ? "Arial" :
+                                         (comboBoxFonts.Items.Count > 0 ? comboBoxFonts.Items[0] : null);
 
             UpdateDrawingColor(Color.Black);
+            picture.Invalidate();
+        }
+
+        private void LoadProjectData(string path)
+        {
+            try
+            {
+                string json = File.ReadAllText(path);
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                var project = JsonConvert.DeserializeObject<DrawingProject>(json, settings);
+
+                if (project != null && project.Shapes != null)
+                {
+                    _graphics.Clear(Color.White);
+                    _historyManager.ClearHistory();
+
+                    foreach (var shape in project.Shapes)
+                    {
+                        shape.Draw(_graphics);
+                        var command = new DrawCommand(shape, _mainBitmap, "Завантажено");
+                        _historyManager.ExecuteCommand(command, _graphics);
+                    }
+                    RefreshHistoryList();
+                    picture.Invalidate();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження проекту: {ex.Message}");
+            }
+        }
+        private void SaveProject(string filePath)
+        {
+            var project = new DrawingProject
+            {
+                Name = Path.GetFileNameWithoutExtension(filePath),
+                LastModified = DateTime.Now,
+                Shapes = _historyManager.GetShapesForSave(),
+                CanvasWidth = _mainBitmap.Width,
+                CanvasHeight = _mainBitmap.Height
+            };
+
+            string json = JsonConvert.SerializeObject(project, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            });
+
+            File.WriteAllText(filePath, json);
         }
         private Font GetCurrentFont()
         {

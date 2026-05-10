@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq; 
+using System.Linq;
+using Paint_FinalProject.ToolsLibrary;
 
 namespace Paint_FinalProject.Commands
 {
@@ -41,16 +42,26 @@ namespace Paint_FinalProject.Commands
                 _undoStack.Push(command);
             }
         }
+
         public void ClearHistory()
         {
             _undoStack.Clear();
             _redoStack.Clear();
         }
 
+        public List<Shape> GetShapesForSave()
+        {
+            return _undoStack
+                .Select(cmd => cmd.Shape)
+                .Where(shape => shape != null) 
+                .Reverse() 
+                .ToList();
+        }
+
         public List<string> GetHistoryNames()
         {
             List<string> displayNames = new List<string>();
-            var commands = _undoStack.ToList(); 
+            var commands = _undoStack.ToList();
 
             int i = 0;
             while (i < commands.Count)
