@@ -1,0 +1,27 @@
+## --- Visual Studio & .NET ---
+# Тимчасові папки з результатами компіляції 
+[Bb]in/
+[Ob]j/
+TestResults/
+
+# Налаштування конкретного користувача
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- NuGet ---
+packages/
+*.nuget.props
+*.nuget.targets
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Backup & Temp ---
+*.bak
+*.tmp
+*.log
