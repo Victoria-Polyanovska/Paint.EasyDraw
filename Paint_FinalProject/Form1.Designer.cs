@@ -1,0 +1,616 @@
+﻿namespace Paint_FinalProject
+{
+    partial class Form1
+    {
+        /// <summary>
+        ///  Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            panel1 = new Panel();
+            button_clear = new Button();
+            button_save = new Button();
+            color_picker = new PictureBox();
+            button_fill = new Button();
+            button_color = new Button();
+            button_add = new Button();
+            button_text = new Button();
+            button_rct = new Button();
+            button_trg = new Button();
+            button_ellipse = new Button();
+            button_line = new Button();
+            button_colors = new Button();
+            button_eraser = new Button();
+            button_pen = new Button();
+            panel2 = new Panel();
+            labelZoomPercent = new Label();
+            trackBarZoom = new TrackBar();
+            button_minus = new Button();
+            button_plus = new Button();
+            button_returntomenu = new Button();
+            button_redo = new Button();
+            button_undo = new Button();
+            panelTextOptions = new Panel();
+            numericFontSize = new NumericUpDown();
+            comboBoxFonts = new ComboBox();
+            button_u = new Button();
+            button_i = new Button();
+            button_b = new Button();
+            picture = new PictureBox();
+            trackBar1 = new TrackBar();
+            listBoxHistory = new ListBox();
+            panel3 = new Panel();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)color_picker).BeginInit();
+            panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarZoom).BeginInit();
+            panelTextOptions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericFontSize).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picture).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            panel3.SuspendLayout();
+            SuspendLayout();
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.FromArgb(64, 64, 64);
+            panel1.Controls.Add(button_clear);
+            panel1.Controls.Add(button_save);
+            panel1.Controls.Add(color_picker);
+            panel1.Controls.Add(button_fill);
+            panel1.Controls.Add(button_color);
+            panel1.Controls.Add(button_add);
+            panel1.Controls.Add(button_text);
+            panel1.Controls.Add(button_rct);
+            panel1.Controls.Add(button_trg);
+            panel1.Controls.Add(button_ellipse);
+            panel1.Controls.Add(button_line);
+            panel1.Controls.Add(button_colors);
+            panel1.Controls.Add(button_eraser);
+            panel1.Controls.Add(button_pen);
+            panel1.Location = new Point(5, 4);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1166, 101);
+            panel1.TabIndex = 0;
+            // 
+            // button_clear
+            // 
+            button_clear.BackColor = Color.Transparent;
+            button_clear.BackgroundImageLayout = ImageLayout.Center;
+            button_clear.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_clear.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_clear.FlatStyle = FlatStyle.Flat;
+            button_clear.ForeColor = Color.White;
+            button_clear.Location = new Point(1026, 53);
+            button_clear.Name = "button_clear";
+            button_clear.Size = new Size(104, 39);
+            button_clear.TabIndex = 12;
+            button_clear.Text = "Clear";
+            button_clear.UseVisualStyleBackColor = false;
+            button_clear.Click += button_clear_Click;
+            // 
+            // button_save
+            // 
+            button_save.BackColor = Color.Transparent;
+            button_save.BackgroundImageLayout = ImageLayout.Center;
+            button_save.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_save.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_save.FlatStyle = FlatStyle.Flat;
+            button_save.ForeColor = Color.White;
+            button_save.Location = new Point(1026, 8);
+            button_save.Name = "button_save";
+            button_save.Size = new Size(104, 39);
+            button_save.TabIndex = 11;
+            button_save.Text = "Save";
+            button_save.UseVisualStyleBackColor = false;
+            button_save.Click += button_save_Click;
+            // 
+            // color_picker
+            // 
+            color_picker.Image = Properties.Resources.color_palette;
+            color_picker.Location = new Point(771, -8);
+            color_picker.Name = "color_picker";
+            color_picker.Size = new Size(232, 109);
+            color_picker.SizeMode = PictureBoxSizeMode.StretchImage;
+            color_picker.TabIndex = 10;
+            color_picker.TabStop = false;
+            color_picker.MouseDown += color_picker_MouseDown;
+            // 
+            // button_fill
+            // 
+            button_fill.BackColor = Color.Transparent;
+            button_fill.BackgroundImage = Properties.Resources.free_icon_paint_bucket_11443210;
+            button_fill.BackgroundImageLayout = ImageLayout.Center;
+            button_fill.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_fill.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_fill.FlatStyle = FlatStyle.Flat;
+            button_fill.ForeColor = Color.White;
+            button_fill.Location = new Point(217, 19);
+            button_fill.Name = "button_fill";
+            button_fill.Size = new Size(64, 67);
+            button_fill.TabIndex = 8;
+            button_fill.UseVisualStyleBackColor = false;
+            button_fill.Click += button_fill_Click;
+            // 
+            // button_color
+            // 
+            button_color.BackColor = Color.White;
+            button_color.Location = new Point(717, 28);
+            button_color.Name = "button_color";
+            button_color.Size = new Size(45, 49);
+            button_color.TabIndex = 0;
+            button_color.UseVisualStyleBackColor = false;
+            // 
+            // button_add
+            // 
+            button_add.BackColor = Color.Transparent;
+            button_add.BackgroundImage = Properties.Resources.free_icon_plus_3524388;
+            button_add.BackgroundImageLayout = ImageLayout.Center;
+            button_add.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_add.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_add.FlatStyle = FlatStyle.Flat;
+            button_add.ForeColor = Color.White;
+            button_add.Location = new Point(637, 19);
+            button_add.Name = "button_add";
+            button_add.Size = new Size(64, 67);
+            button_add.TabIndex = 9;
+            button_add.UseVisualStyleBackColor = false;
+            button_add.Click += button_add_Click;
+            // 
+            // button_text
+            // 
+            button_text.BackColor = Color.Transparent;
+            button_text.BackgroundImage = Properties.Resources.free_icon_text_size_12520031;
+            button_text.BackgroundImageLayout = ImageLayout.Center;
+            button_text.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_text.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_text.FlatStyle = FlatStyle.Flat;
+            button_text.ForeColor = Color.White;
+            button_text.Location = new Point(567, 19);
+            button_text.Name = "button_text";
+            button_text.Size = new Size(64, 67);
+            button_text.TabIndex = 7;
+            button_text.UseVisualStyleBackColor = false;
+            button_text.Click += button_text_Click;
+            // 
+            // button_rct
+            // 
+            button_rct.BackColor = Color.Transparent;
+            button_rct.BackgroundImage = Properties.Resources.free_icon_rectangle_9369799__1_;
+            button_rct.BackgroundImageLayout = ImageLayout.Center;
+            button_rct.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_rct.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_rct.FlatStyle = FlatStyle.Flat;
+            button_rct.ForeColor = Color.White;
+            button_rct.Location = new Point(497, 19);
+            button_rct.Name = "button_rct";
+            button_rct.Size = new Size(64, 67);
+            button_rct.TabIndex = 6;
+            button_rct.UseVisualStyleBackColor = false;
+            button_rct.Click += button_rct_Click;
+            // 
+            // button_trg
+            // 
+            button_trg.BackColor = Color.Transparent;
+            button_trg.BackgroundImage = Properties.Resources.free_icon_triangle_outline_variant_33854;
+            button_trg.BackgroundImageLayout = ImageLayout.Center;
+            button_trg.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_trg.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_trg.FlatStyle = FlatStyle.Flat;
+            button_trg.ForeColor = Color.White;
+            button_trg.Location = new Point(427, 19);
+            button_trg.Name = "button_trg";
+            button_trg.Size = new Size(64, 67);
+            button_trg.TabIndex = 5;
+            button_trg.UseVisualStyleBackColor = false;
+            button_trg.Click += button_trg_Click;
+            // 
+            // button_ellipse
+            // 
+            button_ellipse.BackColor = Color.Transparent;
+            button_ellipse.BackgroundImage = Properties.Resources.free_icon_circle_274355;
+            button_ellipse.BackgroundImageLayout = ImageLayout.Center;
+            button_ellipse.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_ellipse.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_ellipse.FlatStyle = FlatStyle.Flat;
+            button_ellipse.ForeColor = Color.White;
+            button_ellipse.Location = new Point(357, 19);
+            button_ellipse.Name = "button_ellipse";
+            button_ellipse.Size = new Size(64, 67);
+            button_ellipse.TabIndex = 4;
+            button_ellipse.UseVisualStyleBackColor = false;
+            button_ellipse.Click += button_ellipse_Click;
+            // 
+            // button_line
+            // 
+            button_line.BackColor = Color.Transparent;
+            button_line.BackgroundImage = Properties.Resources.free_icon_line_segemnt_16118102__1_;
+            button_line.BackgroundImageLayout = ImageLayout.Center;
+            button_line.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_line.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_line.FlatStyle = FlatStyle.Flat;
+            button_line.ForeColor = Color.White;
+            button_line.Location = new Point(287, 19);
+            button_line.Name = "button_line";
+            button_line.Size = new Size(64, 67);
+            button_line.TabIndex = 3;
+            button_line.UseVisualStyleBackColor = false;
+            button_line.Click += button_line_Click;
+            // 
+            // button_colors
+            // 
+            button_colors.BackColor = Color.Transparent;
+            button_colors.BackgroundImage = Properties.Resources.free_icon_palette_776202;
+            button_colors.BackgroundImageLayout = ImageLayout.Center;
+            button_colors.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_colors.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_colors.FlatStyle = FlatStyle.Flat;
+            button_colors.ForeColor = Color.White;
+            button_colors.Location = new Point(147, 19);
+            button_colors.Name = "button_colors";
+            button_colors.Size = new Size(64, 67);
+            button_colors.TabIndex = 2;
+            button_colors.UseVisualStyleBackColor = false;
+            button_colors.Click += button_colors_Click;
+            // 
+            // button_eraser
+            // 
+            button_eraser.BackColor = Color.Transparent;
+            button_eraser.BackgroundImage = Properties.Resources.free_icon_eraser_2661173;
+            button_eraser.BackgroundImageLayout = ImageLayout.Center;
+            button_eraser.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_eraser.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_eraser.FlatStyle = FlatStyle.Flat;
+            button_eraser.ForeColor = Color.White;
+            button_eraser.Location = new Point(77, 19);
+            button_eraser.Name = "button_eraser";
+            button_eraser.Size = new Size(64, 67);
+            button_eraser.TabIndex = 1;
+            button_eraser.UseVisualStyleBackColor = false;
+            button_eraser.Click += button_eraser_Click;
+            // 
+            // button_pen
+            // 
+            button_pen.BackColor = Color.Transparent;
+            button_pen.BackgroundImage = Properties.Resources.free_icon_pencil_4898440;
+            button_pen.BackgroundImageLayout = ImageLayout.Center;
+            button_pen.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_pen.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_pen.FlatStyle = FlatStyle.Flat;
+            button_pen.ForeColor = Color.White;
+            button_pen.Location = new Point(7, 19);
+            button_pen.Name = "button_pen";
+            button_pen.Size = new Size(64, 67);
+            button_pen.TabIndex = 0;
+            button_pen.UseVisualStyleBackColor = false;
+            button_pen.Click += button_pen_Click;
+            // 
+            // panel2
+            // 
+            panel2.BackColor = Color.FromArgb(64, 64, 64);
+            panel2.Controls.Add(labelZoomPercent);
+            panel2.Controls.Add(trackBarZoom);
+            panel2.Controls.Add(button_minus);
+            panel2.Controls.Add(button_plus);
+            panel2.Controls.Add(button_returntomenu);
+            panel2.Controls.Add(button_redo);
+            panel2.Controls.Add(button_undo);
+            panel2.Location = new Point(5, 638);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(1166, 52);
+            panel2.TabIndex = 1;
+            // 
+            // labelZoomPercent
+            // 
+            labelZoomPercent.AutoSize = true;
+            labelZoomPercent.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            labelZoomPercent.ForeColor = Color.White;
+            labelZoomPercent.Location = new Point(143, 7);
+            labelZoomPercent.Name = "labelZoomPercent";
+            labelZoomPercent.Size = new Size(84, 38);
+            labelZoomPercent.TabIndex = 18;
+            labelZoomPercent.Text = "100%";
+            // 
+            // trackBarZoom
+            // 
+            trackBarZoom.Location = new Point(233, 7);
+            trackBarZoom.Maximum = 20;
+            trackBarZoom.Minimum = 2;
+            trackBarZoom.Name = "trackBarZoom";
+            trackBarZoom.Size = new Size(168, 69);
+            trackBarZoom.TabIndex = 17;
+            trackBarZoom.Value = 10;
+            trackBarZoom.Scroll += trackBarZoom_Scroll;
+            // 
+            // button_minus
+            // 
+            button_minus.BackColor = Color.Transparent;
+            button_minus.BackgroundImage = Properties.Resources.free_icon_zoom_out_17807703;
+            button_minus.BackgroundImageLayout = ImageLayout.Center;
+            button_minus.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_minus.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_minus.FlatStyle = FlatStyle.Flat;
+            button_minus.ForeColor = Color.White;
+            button_minus.Location = new Point(73, 7);
+            button_minus.Name = "button_minus";
+            button_minus.Size = new Size(64, 36);
+            button_minus.TabIndex = 16;
+            button_minus.UseVisualStyleBackColor = false;
+            button_minus.Click += button_minus_Click;
+            // 
+            // button_plus
+            // 
+            button_plus.BackColor = Color.Transparent;
+            button_plus.BackgroundImage = Properties.Resources.free_icon_zoom_increasing_symbol_54862;
+            button_plus.BackgroundImageLayout = ImageLayout.Center;
+            button_plus.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_plus.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_plus.FlatStyle = FlatStyle.Flat;
+            button_plus.ForeColor = Color.White;
+            button_plus.Location = new Point(3, 7);
+            button_plus.Name = "button_plus";
+            button_plus.Size = new Size(64, 36);
+            button_plus.TabIndex = 15;
+            button_plus.UseVisualStyleBackColor = false;
+            button_plus.Click += button_plus_Click;
+            // 
+            // button_returntomenu
+            // 
+            button_returntomenu.BackColor = Color.Transparent;
+            button_returntomenu.BackgroundImageLayout = ImageLayout.Center;
+            button_returntomenu.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_returntomenu.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_returntomenu.FlatStyle = FlatStyle.Flat;
+            button_returntomenu.ForeColor = Color.White;
+            button_returntomenu.Location = new Point(862, 7);
+            button_returntomenu.Name = "button_returntomenu";
+            button_returntomenu.Size = new Size(158, 36);
+            button_returntomenu.TabIndex = 13;
+            button_returntomenu.Text = "Back to menu";
+            button_returntomenu.UseVisualStyleBackColor = false;
+            button_returntomenu.Click += button_returntomenu_Click;
+            // 
+            // button_redo
+            // 
+            button_redo.BackColor = Color.Transparent;
+            button_redo.BackgroundImage = Properties.Resources.free_icon_forward_9333903__1_;
+            button_redo.BackgroundImageLayout = ImageLayout.Center;
+            button_redo.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_redo.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_redo.FlatStyle = FlatStyle.Flat;
+            button_redo.ForeColor = Color.White;
+            button_redo.Location = new Point(1096, 7);
+            button_redo.Name = "button_redo";
+            button_redo.Size = new Size(64, 36);
+            button_redo.TabIndex = 14;
+            button_redo.UseVisualStyleBackColor = false;
+            button_redo.Click += button_redo_Click;
+            // 
+            // button_undo
+            // 
+            button_undo.BackColor = Color.Transparent;
+            button_undo.BackgroundImage = Properties.Resources.free_icon_backward_318339__1_;
+            button_undo.BackgroundImageLayout = ImageLayout.Center;
+            button_undo.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_undo.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_undo.FlatStyle = FlatStyle.Flat;
+            button_undo.ForeColor = Color.White;
+            button_undo.Location = new Point(1026, 7);
+            button_undo.Name = "button_undo";
+            button_undo.Size = new Size(64, 36);
+            button_undo.TabIndex = 13;
+            button_undo.UseVisualStyleBackColor = false;
+            button_undo.Click += button_undo_Click;
+            // 
+            // panelTextOptions
+            // 
+            panelTextOptions.BackColor = Color.FromArgb(64, 64, 64);
+            panelTextOptions.Controls.Add(numericFontSize);
+            panelTextOptions.Controls.Add(comboBoxFonts);
+            panelTextOptions.Controls.Add(button_u);
+            panelTextOptions.Controls.Add(button_i);
+            panelTextOptions.Controls.Add(button_b);
+            panelTextOptions.Location = new Point(8, 111);
+            panelTextOptions.Name = "panelTextOptions";
+            panelTextOptions.Size = new Size(698, 84);
+            panelTextOptions.TabIndex = 4;
+            panelTextOptions.Visible = false;
+            // 
+            // numericFontSize
+            // 
+            numericFontSize.Location = new Point(468, 21);
+            numericFontSize.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
+            numericFontSize.Name = "numericFontSize";
+            numericFontSize.Size = new Size(180, 35);
+            numericFontSize.TabIndex = 17;
+            numericFontSize.Value = new decimal(new int[] { 12, 0, 0, 0 });
+            // 
+            // comboBoxFonts
+            // 
+            comboBoxFonts.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxFonts.FormattingEnabled = true;
+            comboBoxFonts.Location = new Point(267, 21);
+            comboBoxFonts.Name = "comboBoxFonts";
+            comboBoxFonts.Size = new Size(182, 38);
+            comboBoxFonts.TabIndex = 16;
+            // 
+            // button_u
+            // 
+            button_u.AccessibleRole = AccessibleRole.None;
+            button_u.BackColor = Color.Transparent;
+            button_u.BackgroundImageLayout = ImageLayout.Center;
+            button_u.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_u.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_u.FlatStyle = FlatStyle.Flat;
+            button_u.Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            button_u.ForeColor = Color.White;
+            button_u.Location = new Point(179, 15);
+            button_u.Name = "button_u";
+            button_u.Size = new Size(64, 55);
+            button_u.TabIndex = 15;
+            button_u.Text = "U";
+            button_u.UseVisualStyleBackColor = false;
+            button_u.Click += button_u_Click;
+            // 
+            // button_i
+            // 
+            button_i.AccessibleRole = AccessibleRole.None;
+            button_i.BackColor = Color.Transparent;
+            button_i.BackgroundImageLayout = ImageLayout.Center;
+            button_i.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_i.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_i.FlatStyle = FlatStyle.Flat;
+            button_i.Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            button_i.ForeColor = Color.White;
+            button_i.Location = new Point(94, 15);
+            button_i.Name = "button_i";
+            button_i.Size = new Size(64, 55);
+            button_i.TabIndex = 14;
+            button_i.Text = "I";
+            button_i.UseVisualStyleBackColor = false;
+            button_i.Click += button_i_Click;
+            // 
+            // button_b
+            // 
+            button_b.AccessibleRole = AccessibleRole.None;
+            button_b.BackColor = Color.Transparent;
+            button_b.BackgroundImageLayout = ImageLayout.Center;
+            button_b.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_b.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_b.FlatStyle = FlatStyle.Flat;
+            button_b.Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            button_b.ForeColor = Color.White;
+            button_b.Location = new Point(12, 15);
+            button_b.Name = "button_b";
+            button_b.Size = new Size(64, 55);
+            button_b.TabIndex = 13;
+            button_b.Text = "B";
+            button_b.UseVisualStyleBackColor = false;
+            button_b.Click += button_b_Click;
+            // 
+            // picture
+            // 
+            picture.BackColor = Color.White;
+            picture.Location = new Point(3, 0);
+            picture.Name = "picture";
+            picture.Size = new Size(926, 518);
+            picture.TabIndex = 2;
+            picture.TabStop = false;
+            picture.Paint += picture_Paint;
+            picture.MouseDown += picture_MouseDown;
+            picture.MouseMove += picture_MouseMove;
+            picture.MouseUp += picture_MouseUp;
+            // 
+            // trackBar1
+            // 
+            trackBar1.Location = new Point(935, 15);
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(225, 69);
+            trackBar1.TabIndex = 3;
+            trackBar1.Scroll += trackBar1_Scroll;
+            // 
+            // listBoxHistory
+            // 
+            listBoxHistory.FormattingEnabled = true;
+            listBoxHistory.ItemHeight = 30;
+            listBoxHistory.Location = new Point(961, 90);
+            listBoxHistory.Name = "listBoxHistory";
+            listBoxHistory.Size = new Size(180, 424);
+            listBoxHistory.TabIndex = 4;
+            // 
+            // panel3
+            // 
+            panel3.BackColor = Color.FromArgb(64, 64, 64);
+            panel3.Controls.Add(listBoxHistory);
+            panel3.Controls.Add(trackBar1);
+            panel3.Controls.Add(picture);
+            panel3.Location = new Point(5, 111);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(1166, 521);
+            panel3.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Black;
+            ClientSize = new Size(1177, 698);
+            Controls.Add(panelTextOptions);
+            Controls.Add(panel2);
+            Controls.Add(panel1);
+            Controls.Add(panel3);
+            Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Paint";
+            panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)color_picker).EndInit();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarZoom).EndInit();
+            panelTextOptions.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)numericFontSize).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picture).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            panel3.ResumeLayout(false);
+            panel3.PerformLayout();
+            ResumeLayout(false);
+        }
+
+        #endregion
+
+        private Panel panel1;
+        private Panel panel2;
+        private Button button_eraser;
+        private Button button_pen;
+        private Button button_color;
+        private PictureBox color_picker;
+        private Button button_add;
+        private Button button_fill;
+        private Button button_text;
+        private Button button_rct;
+        private Button button_trg;
+        private Button button_ellipse;
+        private Button button_line;
+        private Button button_colors;
+        private Button button_clear;
+        private Button button_save;
+        private Button button_minus;
+        private Button button_plus;
+        private Button button_returntomenu;
+        private Button button_redo;
+        private Button button_undo;
+        private Panel panelTextOptions;
+        private ComboBox comboBoxFonts;
+        private Button button_u;
+        private Button button_i;
+        private Button button_b;
+        private NumericUpDown numericFontSize;
+        private PictureBox picture;
+        private TrackBar trackBar1;
+        private ListBox listBoxHistory;
+        private Panel panel3;
+        private TrackBar trackBarZoom;
+        private Label labelZoomPercent;
+    }
+}

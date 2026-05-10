@@ -1,3 +1,32 @@
+<<<<<<< HEAD
+﻿################################################################################
+# Данный GITIGNORE-файл был автоматически создан Microsoft(R) Visual Studio.
+################################################################################
+
+/Paint_FinalProject/.vs/Paint_FinalProject/CopilotIndices/17.14.698.11175
+/Paint_FinalProject/.vs/Paint_FinalProject/copilot-chat/5c883242/sessions
+/Paint_FinalProject/.vs/Paint_FinalProject/DesignTimeBuild
+/Paint_FinalProject/.vs/Paint_FinalProject/FileContentIndex
+/Paint_FinalProject/.vs/Paint_FinalProject/v17/TestStore/0
+/Paint_FinalProject/.vs/Paint_FinalProject/v17
+/Paint_FinalProject/.vs/ProjectEvaluation
+/Paint_FinalProject/bin/Debug/net8.0-windows
+/Paint_FinalProject/Resources
+/Paint_FinalProject/Properties
+/Paint_FinalProject.Tests/bin/Debug/net8.0-windows
+/Paint_FinalProject.Tests/obj
+/Paint_FinalProject/obj
+/Paint_FinalProject.Tests
+/StartForm/bin/Debug/net8.0-windows
+/StartForm/obj
+/StartForm/Properties
+/Paint_FinalProject/Form1.resx
+/Paint_FinalProject/Paint_FinalProject.sln
+/Paint_FinalProject/StartForm.resx
+/StartForm/Form1.resx
+/StartForm/StartForm.csproj.user
+/Paint_FinalProject/Paint_FinalProject.csproj.user
+=======
 ## --- Visual Studio & .NET ---
 # Тимчасові папки з результатами компіляції 
 [Bb]in/
@@ -25,3 +54,5 @@ desktop.ini
 *.bak
 *.tmp
 *.log
+>>>>>>> e46a9ba068128d769079c4cb77914cf2a2defef9
+/Paint.Tests
