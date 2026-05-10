@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿################################################################################
 # Данный GITIGNORE-файл был автоматически создан Microsoft(R) Visual Studio.
 ################################################################################
@@ -25,3 +26,33 @@
 /StartForm/Form1.resx
 /StartForm/StartForm.csproj.user
 /Paint_FinalProject/Paint_FinalProject.csproj.user
+=======
+## --- Visual Studio & .NET ---
+# Тимчасові папки з результатами компіляції 
+[Bb]in/
+[Ob]j/
+TestResults/
+
+# Налаштування конкретного користувача
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- NuGet ---
+packages/
+*.nuget.props
+*.nuget.targets
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Backup & Temp ---
+*.bak
+*.tmp
+*.log
+>>>>>>> e46a9ba068128d769079c4cb77914cf2a2defef9
+/Paint.Tests
