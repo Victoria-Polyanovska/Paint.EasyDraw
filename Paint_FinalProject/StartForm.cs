@@ -26,22 +26,28 @@ namespace Paint_FinalProject
             LoadProjectsList();
 
         }
+        private readonly string _historyFile = Path.Combine(Application.StartupPath, "recent_files.txt");
         private void LoadProjectsList()
         {
             listBoxProjects.Items.Clear();
 
+            if (!File.Exists(_historyFile)) return;
+
             try
             {
-                string[] files = Directory.GetFiles(_projectsPath, "*.json");
+                string[] paths = File.ReadAllLines(_historyFile);
 
-                foreach (string file in files)
+                foreach (string path in paths)
                 {
-                    listBoxProjects.Items.Add(Path.GetFileNameWithoutExtension(file));
+                    if (File.Exists(path)) 
+                    {
+                        listBoxProjects.Items.Add(path);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при завантаженні списку: {ex.Message}");
+                MessageBox.Show($"Помилка історії: {ex.Message}");
             }
         }
 
@@ -65,16 +71,17 @@ namespace Paint_FinalProject
 
         private void button_open_Click(object sender, EventArgs e)
         {
-            if (listBoxProjects.SelectedItem == null)
+            using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                MessageBox.Show("Будь ласка, спочатку оберіть проект зі списку!");
-                return;
+                ofd.Filter = "Всі підтримувані файли|*.json;*.png;*.jpg;*.jpeg;*.bmp|Проекти JSON|*.json|Зображення|*.png;*.jpg;*.jpeg;*.bmp";
+                ofd.Title = "Оберіть файл для редагування";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+                    OpenEditor(fileName, ofd.FileName);
+                }
             }
-
-            string selectedName = listBoxProjects.SelectedItem.ToString();
-            string fullPath = Path.Combine(_projectsPath, selectedName + ".json");
-
-            OpenEditor(selectedName, fullPath);
         }
         private void OpenEditor(string name, string path)
         {
@@ -99,7 +106,21 @@ namespace Paint_FinalProject
 
         private void listBoxProjects_DoubleClick(object sender, EventArgs e)
         {
-            button_open_Click(sender, e);
+            if (listBoxProjects.SelectedItem != null)
+            {
+                string fullPath = listBoxProjects.SelectedItem.ToString();
+
+                if (File.Exists(fullPath))
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(fullPath);
+                    OpenEditor(fileName, fullPath);
+                }
+                else
+                {
+                    MessageBox.Show("Цей файл більше не існує за вказаним шляхом.");
+                    LoadProjectsList(); 
+                }
+            }
         }
     }
 }

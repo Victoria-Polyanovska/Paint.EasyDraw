@@ -39,7 +39,7 @@ namespace Paint_FinalProject
 
             this.Text = $"Paint - {_projectName}";
 
-            SetupCanvas(); 
+            SetupCanvas();
 
             if (!string.IsNullOrEmpty(_projectPath))
             {
@@ -79,28 +79,45 @@ namespace Paint_FinalProject
         {
             try
             {
-                string json = File.ReadAllText(path);
-                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-                var project = JsonConvert.DeserializeObject<DrawingProject>(json, settings);
+                string extension = Path.GetExtension(path).ToLower();
 
-                if (project != null && project.Shapes != null)
+                if (extension == ".json")
                 {
-                    _graphics.Clear(Color.White);
-                    _historyManager.ClearHistory();
+                    string json = File.ReadAllText(path);
+                    var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                    var project = JsonConvert.DeserializeObject<DrawingProject>(json, settings);
 
-                    foreach (var shape in project.Shapes)
+                    if (project != null && project.Shapes != null)
                     {
-                        shape.Draw(_graphics);
-                        var command = new DrawCommand(shape, _mainBitmap, "Завантажено");
+                        _graphics.Clear(Color.White);
+                        _historyManager.ClearHistory();
+                        foreach (var shape in project.Shapes)
+                        {
+                            shape.Draw(_graphics);
+                            var command = new DrawCommand(shape, _mainBitmap, "Завантажено");
+                            _historyManager.ExecuteCommand(command, _graphics);
+                        }
+                    }
+                }
+                else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp")
+                {
+                    using (Image img = Image.FromFile(path))
+                    {
+                        _graphics.Clear(Color.White);
+                        _graphics.DrawImage(img, 0, 0, _mainBitmap.Width, _mainBitmap.Height);
+
+                        Bitmap snapshot = new Bitmap(_mainBitmap);
+                        var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "Імпорт фото");
                         _historyManager.ExecuteCommand(command, _graphics);
                     }
-                    RefreshHistoryList();
-                    picture.Invalidate();
                 }
+
+                RefreshHistoryList();
+                picture.Invalidate();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка завантаження проекту: {ex.Message}");
+                MessageBox.Show($"Не вдалося відкрити файл: {ex.Message}");
             }
         }
         private void SaveProject(string filePath)
@@ -166,32 +183,31 @@ namespace Paint_FinalProject
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
-        private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor, int tolerance)
+        private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
-            if (ColorsMatch(targetColor, replacementColor, tolerance)) return;
+            if (targetColor.ToArgb() == replacementColor.ToArgb()) return;
 
-            Stack<Point> pixels = new Stack<Point>();
-            pixels.Push(pt);
+            Queue<Point> pixels = new Queue<Point>();
+            pixels.Enqueue(pt);
 
-            int replacementArgb = replacementColor.ToArgb();
+            int width = bmp.Width;
+            int height = bmp.Height;
+            int targetArgb = targetColor.ToArgb();
 
             while (pixels.Count > 0)
             {
-                Point a = pixels.Pop();
+                Point a = pixels.Dequeue();
 
-                if (a.X < 0 || a.X >= bmp.Width || a.Y < 0 || a.Y >= bmp.Height)
-                    continue;
+                if (a.X < 0 || a.X >= width || a.Y < 0 || a.Y >= height) continue;
 
-                Color currentColor = bmp.GetPixel(a.X, a.Y);
-
-                if (currentColor.ToArgb() != replacementArgb && ColorsMatch(currentColor, targetColor, tolerance))
+                if (bmp.GetPixel(a.X, a.Y).ToArgb() == targetArgb)
                 {
                     bmp.SetPixel(a.X, a.Y, replacementColor);
 
-                    pixels.Push(new Point(a.X - 1, a.Y));
-                    pixels.Push(new Point(a.X + 1, a.Y));
-                    pixels.Push(new Point(a.X, a.Y - 1));
-                    pixels.Push(new Point(a.X, a.Y + 1));
+                    pixels.Enqueue(new Point(a.X - 1, a.Y));
+                    pixels.Enqueue(new Point(a.X + 1, a.Y));
+                    pixels.Enqueue(new Point(a.X, a.Y - 1));
+                    pixels.Enqueue(new Point(a.X, a.Y + 1));
                 }
             }
         }
@@ -270,10 +286,11 @@ namespace Paint_FinalProject
                 if (canvasPoint.X >= 0 && canvasPoint.X < _mainBitmap.Width && canvasPoint.Y >= 0 && canvasPoint.Y < _mainBitmap.Height)
                 {
                     Color targetColor = _mainBitmap.GetPixel(canvasPoint.X, canvasPoint.Y);
-                    FloodFill(_mainBitmap, canvasPoint, targetColor, _currentColor, 100);
 
-                    Bitmap currentSate = new Bitmap(_mainBitmap);
-                    var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Заливка");
+                    FloodFill(_mainBitmap, canvasPoint, targetColor, _currentColor);
+
+                    Bitmap snapshot = new Bitmap(_mainBitmap);
+                    var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "Заливка");
                     _historyManager.ExecuteCommand(command, _graphics);
 
                     RefreshHistoryList();
@@ -423,29 +440,27 @@ namespace Paint_FinalProject
 
         private void button_save_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                openFileDialog.Filter = "Зображення (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                saveFileDialog.Filter = "JSON Project|*.json|PNG Image|*.png|JPEG Image|*.jpg";
+                saveFileDialog.Title = "Зберегти роботу";
+                saveFileDialog.FileName = _projectName;
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    try
-                    {
-                        using (Image loadedImage = Image.FromFile(openFileDialog.FileName))
-                        {
-                            _graphics.DrawImage(loadedImage, 0, 0, _mainBitmap.Width, _mainBitmap.Height);
+                    string filePath = saveFileDialog.FileName;
 
-                            Bitmap currentSate = new Bitmap(_mainBitmap);
-                            var command = new DrawCommand(new ImageShape(new Point(0, 0), currentSate), _mainBitmap, "Додано фото");
-                            _historyManager.ExecuteCommand(command, _graphics);
-
-                            RefreshHistoryList();
-                            picture.Invalidate(); 
-                        }
-                    }
-                    catch (Exception ex)
+                    if (filePath.EndsWith(".json"))
                     {
-                        MessageBox.Show($"Помилка: {ex.Message}");
+                        SaveProject(filePath);
+                        AddToHistory(filePath);
                     }
+                    else
+                    {
+                        _mainBitmap.Save(filePath);
+                    }
+
+                    MessageBox.Show("Збережено успішно!");
                 }
             }
         }
@@ -577,7 +592,7 @@ namespace Paint_FinalProject
                 }
             }
         }
-        
+
         private void UpdateZoom(float newFactor)
         {
             _zoomFactor = newFactor;
@@ -596,6 +611,41 @@ namespace Paint_FinalProject
         private void trackBarZoom_Scroll(object sender, EventArgs e)
         {
             UpdateZoom(trackBarZoom.Value / 10.0f);
+        }
+
+        private void button_returntomenu_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                    "Ви впевнені, що хочете повернутися в головне меню? Незбережені зміни можуть бути втрачені.",
+                    "Вихід у меню",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+            }
+        }
+        private void AddToHistory(string filePath)
+        {
+            try
+            {
+                string historyPath = Path.Combine(Application.StartupPath, "recent_files.txt");
+                List<string> lines = File.Exists(historyPath)
+                    ? File.ReadAllLines(historyPath).ToList()
+                    : new List<string>();
+
+                if (lines.Contains(filePath)) lines.Remove(filePath);
+
+                lines.Insert(0, filePath); 
+
+                File.WriteAllLines(historyPath, lines.Take(10));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Помилка запису історії: " + ex.Message);
+            }
         }
     }
 }

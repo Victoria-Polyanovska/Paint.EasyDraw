@@ -48,7 +48,7 @@
             trackBarZoom = new TrackBar();
             button_minus = new Button();
             button_plus = new Button();
-            button3 = new Button();
+            button_returntomenu = new Button();
             button_redo = new Button();
             button_undo = new Button();
             panelTextOptions = new Panel();
@@ -313,7 +313,7 @@
             panel2.Controls.Add(trackBarZoom);
             panel2.Controls.Add(button_minus);
             panel2.Controls.Add(button_plus);
-            panel2.Controls.Add(button3);
+            panel2.Controls.Add(button_returntomenu);
             panel2.Controls.Add(button_redo);
             panel2.Controls.Add(button_undo);
             panel2.Location = new Point(5, 638);
@@ -375,20 +375,21 @@
             button_plus.UseVisualStyleBackColor = false;
             button_plus.Click += button_plus_Click;
             // 
-            // button3
+            // button_returntomenu
             // 
-            button3.BackColor = Color.Transparent;
-            button3.BackgroundImageLayout = ImageLayout.Center;
-            button3.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
-            button3.FlatAppearance.MouseOverBackColor = Color.Maroon;
-            button3.FlatStyle = FlatStyle.Flat;
-            button3.ForeColor = Color.White;
-            button3.Location = new Point(862, 7);
-            button3.Name = "button3";
-            button3.Size = new Size(158, 36);
-            button3.TabIndex = 13;
-            button3.Text = "Back to menu";
-            button3.UseVisualStyleBackColor = false;
+            button_returntomenu.BackColor = Color.Transparent;
+            button_returntomenu.BackgroundImageLayout = ImageLayout.Center;
+            button_returntomenu.FlatAppearance.MouseDownBackColor = Color.FromArgb(192, 0, 0);
+            button_returntomenu.FlatAppearance.MouseOverBackColor = Color.Maroon;
+            button_returntomenu.FlatStyle = FlatStyle.Flat;
+            button_returntomenu.ForeColor = Color.White;
+            button_returntomenu.Location = new Point(862, 7);
+            button_returntomenu.Name = "button_returntomenu";
+            button_returntomenu.Size = new Size(158, 36);
+            button_returntomenu.TabIndex = 13;
+            button_returntomenu.Text = "Back to menu";
+            button_returntomenu.UseVisualStyleBackColor = false;
+            button_returntomenu.Click += button_returntomenu_Click;
             // 
             // button_redo
             // 
@@ -596,7 +597,7 @@
         private Button button_save;
         private Button button_minus;
         private Button button_plus;
-        private Button button3;
+        private Button button_returntomenu;
         private Button button_redo;
         private Button button_undo;
         private Panel panelTextOptions;
