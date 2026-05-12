@@ -2,7 +2,7 @@ using paint.ToolsLibrary;
 using System.Drawing;
 using Microsoft.VisualBasic;
 using paint;
-
+using Paint.EasyDraw.Factories;
 
 namespace paint
 {
@@ -169,8 +169,8 @@ namespace paint
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*",
-                Title = "Виберіть зображення"
+                Filter = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (*.*)|*.*",
+                Title = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -182,7 +182,7 @@ namespace paint
 
                 if (!allowedExt.Contains(ext))
                 {
-                    MessageBox.Show("Можна додавати тільки зображення!", "Помилка",
+                    MessageBox.Show("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                       MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -341,7 +341,7 @@ namespace paint
             }
             else if (index == 8 && drawingText)
             {
-                string input = Microsoft.VisualBasic.Interaction.InputBox("Введіть текст:", "Додавання тексту", "Текст");
+                string input = Microsoft.VisualBasic.Interaction.InputBox("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ", "пїЅпїЅпїЅпїЅпїЅ");
                 if (!string.IsNullOrEmpty(input))
                 {
                     Point point = set_point(pic, e.Location);
@@ -358,35 +358,17 @@ namespace paint
             Point startPoint = set_point(pic, new Point(cX, cY));
             Point endPoint = set_point(pic, e.Location);
 
-            int curWidth = endPoint.X - startPoint.X;
-            int curHeight = endPoint.Y - startPoint.Y;
-
             Shape shape = null;
 
             try
             {
-                if (index == 3) 
-                {
-                    Rectangle rect = new Rectangle(
-                        Math.Min(startPoint.X, endPoint.X),
-                        Math.Min(startPoint.Y, endPoint.Y),
-                        Math.Abs(curWidth),
-                        Math.Abs(curHeight)
-                    );
-                    shape = new EllipseShape(rect, p.Color, (int)p.Width);
-                }
-                else if (index == 4) 
-                {
-                    shape = new RectangleShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
-                else if (index == 5) 
-                {
-                    shape = new LineShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
-                else if (index == 6) 
-                {
-                    shape = new TriangleShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
+                shape = ShapeFactory.CreateShape(
+                    index,
+                    startPoint,
+                    endPoint,
+                    p
+                );
+
                 if (shape != null)
                 {
                     using (Graphics gBm = Graphics.FromImage(bm))
@@ -401,7 +383,7 @@ namespace paint
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Помилка малювання фігури: " + ex.Message);
+                MessageBox.Show("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: " + ex.Message);
             }
             pic.Refresh();
         }
