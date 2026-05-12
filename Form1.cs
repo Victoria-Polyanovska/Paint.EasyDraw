@@ -3,88 +3,91 @@ using System.Drawing;
 using Microsoft.VisualBasic;
 using paint;
 
-
 namespace paint
 {
+    // Enum замість магічних чисел
+    public enum DrawingTool
+    {
+        None = 0,
+        Pencil = 1,
+        Eraser = 2,
+        Ellipse = 3,
+        Rectangle = 4,
+        Line = 5,
+        Triangle = 6,
+        Fill = 7,
+        Text = 8
+    }
+
     public partial class Form1 : Form
     {
+        // Константи замість магічних чисел
+        private const int FORM_WIDTH = 1330;
+        private const int FORM_HEIGHT = 750;
+        private const int DEFAULT_PEN_WIDTH = 5;
+        private const int MIN_FONT_SIZE = 8;
+        private const int MAX_FONT_SIZE = 72;
+        private const int DEFAULT_FONT_SIZE = 12;
+
+        private Bitmap bm;
+        private Graphics g;
+        private bool isDrawing = false;
+        private Point previousPoint, startPoint;
+        private Pen currentPen;
+        private readonly Pen erasePen;
+        private DrawingTool currentTool = DrawingTool.None;
+        
+        private int currentX, currentY, deltaX, deltaY, startX, startY;
+        private List<Shape> shapes = new List<Shape>();
+        
+        private ColorDialog colorDialog = new ColorDialog();
+        private Color currentColor;
+        
+        private bool isTextModeActive = false;
+        private Font currentFont;
+        private FontStyle currentFontStyle = FontStyle.Regular;
+
         public Form1()
         {
             InitializeComponent();
             InitializeTextOptionsPanel();
+            InitializeDrawingSurface();
+            InitializePenSettings();
+        }
 
-            this.Width = 1330;
-            this.Height = 750;
-
+        private void InitializeDrawingSurface()
+        {
+            this.Width = FORM_WIDTH;
+            this.Height = FORM_HEIGHT;
+            
             bm = new Bitmap(pic.Width, pic.Height);
             g = Graphics.FromImage(bm);
             g.Clear(Color.White);
             pic.Image = bm;
-
-            trackBar1.Value = 5;
-            erase.Width = trackBar1.Value;
         }
-        Bitmap bm;
-        Graphics g;
-        bool paint = false;
-        Point px, py;
-        Pen p = new Pen(Color.Black, 1);
-        Pen erase = new Pen(Color.White, 10);
-        int index; int x, y, sX, sY, cX, cY;
 
-        private List<Shape> shapes = new List<Shape>();
-
-        ColorDialog cd = new ColorDialog();
-        Color new_color;
-
-        private bool drawingText = false;
-        private Font currentFont = new Font("Arial", 12);
-        private FontStyle currentFontStyle = FontStyle.Regular;
-
-        private void btn_redo_Click(object sender, EventArgs e)
+        private void InitializePenSettings()
         {
-
+            currentPen = new Pen(Color.Black, DEFAULT_PEN_WIDTH);
+            trackBar1.Value = DEFAULT_PEN_WIDTH;
+            UpdatePenWidth(DEFAULT_PEN_WIDTH);
         }
-        public void LoadImage(string path)
+
+        private void UpdatePenWidth(int width)
         {
-            this.BackgroundImage = Image.FromFile(path);
-            this.BackgroundImageLayout = ImageLayout.Zoom;
+            currentPen.Width = width;
         }
 
-        private void pic_MouseDown(object sender, MouseEventArgs e)
-        {
-            paint = true;
-            py = e.Location;
+        private readonly Pen erasePen = new Pen(Color.White, DEFAULT_PEN_WIDTH);
 
-            cX = e.X;
-            cY = e.Y;
-
-        }
-
-        private void pic_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (paint)
-            {
-                if (index == 1)
-                {
-                    px = e.Location;
-                    g.DrawLine(p, px, py);
-                    py = px;
-                }
-                if (index == 2)
-                {
-                    px = e.Location;
-                    g.DrawLine(erase, px, py);
-                    py = px;
-                }
-                x = e.X;
-                y = e.Y;
-                sX = e.X - cX;
-                sY = e.Y - cY;
-            }
-            pic.Refresh();
-        }
         private void InitializeTextOptionsPanel()
+        {
+            LoadFontsIntoComboBox();
+            SetupFontSizeComboBox();
+            currentFont = new Font("Arial", DEFAULT_FONT_SIZE);
+        }
+
+        private void LoadFontsIntoComboBox()
         {
             fontComboBoxInPanel.Items.Clear();
             foreach (FontFamily font in FontFamily.Families)
@@ -92,227 +95,336 @@ namespace paint
                 fontComboBoxInPanel.Items.Add(font.Name);
             }
             fontComboBoxInPanel.SelectedItem = "Arial";
-            fontComboBoxInPanel.SelectedIndexChanged += (s, e) =>
-            {
-                if
-                (fontComboBoxInPanel.SelectedItem != null)
-                {
-                    currentFont = new Font(
-                      fontComboBoxInPanel.SelectedItem.ToString(),
-                      currentFont.Size, currentFontStyle);
-                }
-            };
-            fontSizeComboBoxInPanel.Minimum = 8;
-            fontSizeComboBoxInPanel.Maximum = 72;
-            fontSizeComboBoxInPanel.Value = 12;
-            fontSizeComboBoxInPanel.ValueChanged += (s, e) =>
+            fontComboBoxInPanel.SelectedIndexChanged += OnFontChanged;
+        }
+
+        private void SetupFontSizeComboBox()
+        {
+            fontSizeComboBoxInPanel.Minimum = MIN_FONT_SIZE;
+            fontSizeComboBoxInPanel.Maximum = MAX_FONT_SIZE;
+            fontSizeComboBoxInPanel.Value = DEFAULT_FONT_SIZE;
+            fontSizeComboBoxInPanel.ValueChanged += OnFontSizeChanged;
+        }
+
+        private void OnFontChanged(object sender, EventArgs e)
+        {
+            if (fontComboBoxInPanel.SelectedItem != null)
             {
                 currentFont = new Font(
-                  currentFont.FontFamily,
-                  (float)fontSizeComboBoxInPanel.Value,
-                  currentFontStyle);
-            };
-        }
-        static Point set_point(PictureBox pb, Point pt)
-        {
-            float pX = 1f * pb.Image.Width / pb.Width;
-            float pY = 1f * pb.Image.Height / pb.Height;
-            return new Point((int)(pt.X * pX), (int)(pt.Y * pY));
-        }
-
-        private void color_picker_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (color_picker.Image == null) return;
-            Point point = set_point(color_picker, e.Location);
-            Bitmap bmp = (Bitmap)color_picker.Image;
-            if (point.X < 0 || point.Y < 0 || point.X >= bmp.Width || point.Y >= bmp.Height) return;
-            Color picked = bmp.GetPixel(point.X, point.Y);
-            new_color = picked;
-            p.Color = picked;
-            pic_color.BackColor = picked;
-        }
-        private void validate(Bitmap bm, Stack<Point> sp, int x, int y, Color old_color, Color new_color)
-        {
-            Color cx = bm.GetPixel(x, y);
-            if (cx == old_color)
-            {
-                sp.Push(new Point(x, y));
-                bm.SetPixel(x, y, new_color);
+                    fontComboBoxInPanel.SelectedItem.ToString(),
+                    currentFont.Size, 
+                    currentFontStyle);
             }
         }
 
-        public void Fill(Bitmap bm, int x, int y, Color new_clr)
+        private void OnFontSizeChanged(object sender, EventArgs e)
         {
-            Color old_color = bm.GetPixel(x, y);
-            if (old_color == new_clr) return;
-
-            Stack<Point> pixel = new Stack<Point>(); pixel.Push(new Point(x, y));
-            while (pixel.Count > 0)
-            {
-                Point pt = pixel.Pop();
-                if (pt.X > 0 && pt.Y > 0 && pt.X < bm.Width - 1 && pt.Y < bm.Height - 1)
-                {
-                    Color cx = bm.GetPixel(pt.X, pt.Y);
-                    if (cx == old_color)
-                    {
-                        bm.SetPixel(pt.X, pt.Y, new_clr);
-                        pixel.Push(new Point(pt.X - 1, pt.Y));
-                        pixel.Push(new Point(pt.X + 1, pt.Y));
-                        pixel.Push(new Point(pt.X, pt.Y - 1));
-                        pixel.Push(new Point(pt.X, pt.Y + 1));
-                    }
-                }
-            }
+            currentFont = new Font(
+                currentFont.FontFamily,
+                (float)fontSizeComboBoxInPanel.Value,
+                currentFontStyle);
         }
 
-        private void btn_addpic_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Filter = "���������� (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|�� ����� (*.*)|*.*",
-                Title = "������� ����������"
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filePath = openFileDialog.FileName;
-
-                string[] allowedExt = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
-                string ext = Path.GetExtension(filePath).ToLower();
-
-                if (!allowedExt.Contains(ext))
-                {
-                    MessageBox.Show("����� �������� ����� ����������!", "�������",
-                      MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                using (Image img = Image.FromFile(filePath))
-                {
-                    bm = new Bitmap(pic.Width, pic.Height);
-
-                    using (Graphics gr = Graphics.FromImage(bm))
-                    {
-                        gr.Clear(Color.White);
-                        gr.DrawImage(img, 0, 0, pic.Width, pic.Height);
-                    }
-
-                    g = Graphics.FromImage(bm);
-                    pic.Image = bm;
-                }
-            }
-        }
-
-        private void btn_text_Click(object sender, EventArgs e)
-        {
-            textOptionsPanel.Visible = !textOptionsPanel.Visible;
-            if (index == 8)
-            {
-                index = 0;
-                btn_text.BackColor = SystemColors.GrayText;
-                drawingText = false;
-            }
-            else
-            {
-                index = 8;
-                btn_text.BackColor = Color.DimGray;
-                drawingText = true;
-            }
-        }
         private void UpdateCurrentFont()
         {
             if (fontComboBoxInPanel.SelectedItem != null)
             {
                 string fontName = fontComboBoxInPanel.SelectedItem.ToString();
                 float fontSize = (float)fontSizeComboBoxInPanel.Value;
-
                 currentFont = new Font(fontName, fontSize, currentFontStyle);
             }
         }
 
-
-        private void btn_b_Click(object sender, EventArgs e)
+        private void ToggleFontStyle(FontStyle style)
         {
-            currentFontStyle ^= FontStyle.Bold;
+            currentFontStyle ^= style;
             UpdateCurrentFont();
         }
 
-        private void btn_i_Click(object sender, EventArgs e)
+        private static Point ScalePointToImage(PictureBox pictureBox, Point point)
         {
-            currentFontStyle ^= FontStyle.Italic;
-            UpdateCurrentFont();
+            float scaleX = 1f * pictureBox.Image.Width / pictureBox.Width;
+            float scaleY = 1f * pictureBox.Image.Height / pictureBox.Height;
+            return new Point((int)(point.X * scaleX), (int)(point.Y * scaleY));
         }
 
-        private void btn_u_Click(object sender, EventArgs e)
+        #region Drawing Methods
+        private void DrawWithCurrentTool(Point currentPoint)
         {
-            currentFontStyle ^= FontStyle.Underline;
-            UpdateCurrentFont();
+            if (currentTool == DrawingTool.Pencil)
+            {
+                g.DrawLine(currentPen, previousPoint, currentPoint);
+                previousPoint = currentPoint;
+            }
+            else if (currentTool == DrawingTool.Eraser)
+            {
+                g.DrawLine(erasePen, previousPoint, currentPoint);
+                previousPoint = currentPoint;
+            }
         }
 
-        private void trackBar1_ValueChanged_2(object sender, EventArgs e)
+        private void DrawShapePreview(PaintEventArgs e)
         {
-            p.Width = trackBar1.Value;
-            erase.Width = trackBar1.Value;
+            if (!isDrawing) return;
+            
+            Graphics graphics = e.Graphics;
+            
+            switch (currentTool)
+            {
+                case DrawingTool.Ellipse:
+                    graphics.DrawEllipse(currentPen, startX, startY, deltaX, deltaY);
+                    break;
+                case DrawingTool.Rectangle:
+                    graphics.DrawRectangle(currentPen, startX, startY, deltaX, deltaY);
+                    break;
+                case DrawingTool.Line:
+                    graphics.DrawLine(currentPen, startX, startY, currentX, currentY);
+                    break;
+                case DrawingTool.Triangle:
+                    DrawTrianglePreview(graphics);
+                    break;
+            }
         }
 
-        private void btn_color_Click_1(object sender, EventArgs e)
+        private void DrawTrianglePreview(Graphics graphics)
         {
-            cd.ShowDialog();
-            new_color = cd.Color;
-            pic_color.BackColor = cd.Color;
-            p.Color = cd.Color;
+            Point[] trianglePoints = {
+                new Point(startX + deltaX / 2, startY),
+                new Point(startX, startY + deltaY),
+                new Point(startX + deltaX, startY + deltaY)
+            };
+            graphics.DrawPolygon(currentPen, trianglePoints);
         }
 
-        private void btn_fill_Click_1(object sender, EventArgs e)
+        private Shape CreateShape(Point start, Point end)
         {
-            index = 7;
+            int width = end.X - start.X;
+            int height = end.Y - start.Y;
+            
+            return currentTool switch
+            {
+                DrawingTool.Ellipse => CreateEllipseShape(start, end, width, height),
+                DrawingTool.Rectangle => new RectangleShape(start, end, currentPen.Color, (int)currentPen.Width),
+                DrawingTool.Line => new LineShape(start, end, currentPen.Color, (int)currentPen.Width),
+                DrawingTool.Triangle => new TriangleShape(start, end, currentPen.Color, (int)currentPen.Width),
+                _ => null
+            };
         }
 
-        private void btn_ellips_Click_1(object sender, EventArgs e)
+        private EllipseShape CreateEllipseShape(Point start, Point end, int width, int height)
         {
-            index = 3;
+            Rectangle rect = new Rectangle(
+                Math.Min(start.X, end.X),
+                Math.Min(start.Y, end.Y),
+                Math.Abs(width),
+                Math.Abs(height)
+            );
+            return new EllipseShape(rect, currentPen.Color, (int)currentPen.Width);
         }
 
-        private void btn_rect_Click_1(object sender, EventArgs e)
+        private void FinalizeShape(Shape shape)
         {
-            index = 4;
+            if (shape == null) return;
+            
+            using (Graphics graphics = Graphics.FromImage(bm))
+            {
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                shape.Draw(graphics);
+            }
+            pic.Image = bm;
         }
-        private void btn_line_Click_1(object sender, EventArgs e)
+        #endregion
+
+        #region Flood Fill Implementation
+        public void FloodFill(Bitmap bitmap, int x, int y, Color newColor)
         {
-            index = 5;
+            Color oldColor = bitmap.GetPixel(x, y);
+            if (oldColor == newColor) return;
+
+            Stack<Point> pixels = new Stack<Point>();
+            pixels.Push(new Point(x, y));
+
+            while (pixels.Count > 0)
+            {
+                Point point = pixels.Pop();
+                
+                if (IsPointInsideBounds(bitmap, point))
+                {
+                    Color currentColor = bitmap.GetPixel(point.X, point.Y);
+                    
+                    if (currentColor == oldColor)
+                    {
+                        bitmap.SetPixel(point.X, point.Y, newColor);
+                        
+                        // Додаємо сусідні пікселі
+                        pixels.Push(new Point(point.X - 1, point.Y));
+                        pixels.Push(new Point(point.X + 1, point.Y));
+                        pixels.Push(new Point(point.X, point.Y - 1));
+                        pixels.Push(new Point(point.X, point.Y + 1));
+                    }
+                }
+            }
         }
 
-        private void btn_trg_Click_1(object sender, EventArgs e)
+        private bool IsPointInsideBounds(Bitmap bitmap, Point point)
         {
-            index = 6;
+            return point.X > 0 && point.Y > 0 && 
+                   point.X < bitmap.Width - 1 && 
+                   point.Y < bitmap.Height - 1;
+        }
+        #endregion
+
+        #region Image Loading
+        private void LoadImageFromFile(string filePath)
+        {
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+            string extension = Path.GetExtension(filePath).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                MessageBox.Show("Можна додавати тільки зображення!", "Помилка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (Image image = Image.FromFile(filePath))
+            {
+                bm = new Bitmap(pic.Width, pic.Height);
+                
+                using (Graphics graphics = Graphics.FromImage(bm))
+                {
+                    graphics.Clear(Color.White);
+                    graphics.DrawImage(image, 0, 0, pic.Width, pic.Height);
+                }
+                
+                g = Graphics.FromImage(bm);
+                pic.Image = bm;
+            }
+        }
+
+        public void LoadImage(string path)
+        {
+            this.BackgroundImage = Image.FromFile(path);
+            this.BackgroundImageLayout = ImageLayout.Zoom;
+        }
+        #endregion
+
+        #region Event Handlers
+        private void pic_MouseDown(object sender, MouseEventArgs e)
+        {
+            isDrawing = true;
+            previousPoint = e.Location;
+            startX = e.X;
+            startY = e.Y;
+        }
+
+        private void pic_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDrawing)
+            {
+                DrawWithCurrentTool(e.Location);
+                
+                currentX = e.X;
+                currentY = e.Y;
+                deltaX = e.X - startX;
+                deltaY = e.Y - startY;
+            }
+            pic.Refresh();
+        }
+
+        private void pic_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (currentTool == DrawingTool.Fill)
+            {
+                Point scaledPoint = ScalePointToImage(pic, e.Location);
+                FloodFill(bm, scaledPoint.X, scaledPoint.Y, currentColor);
+                pic.Image = bm;
+            }
+            else if (currentTool == DrawingTool.Text && isTextModeActive)
+            {
+                AddTextToImage(e.Location);
+            }
+        }
+
+        private void AddTextToImage(Point location)
+        {
+            string input = Interaction.InputBox("Введіть текст:", "Додавання тексту", "Текст");
+            
+            if (!string.IsNullOrEmpty(input))
+            {
+                Point scaledPoint = ScalePointToImage(pic, location);
+                TextShape textShape = new TextShape(input, scaledPoint, currentFont, currentPen.Color);
+                shapes.Add(textShape);
+                pic.Invalidate();
+            }
+        }
+
+        private void pic_MouseUp(object sender, MouseEventArgs e)
+        {
+            isDrawing = false;
+            
+            Point startPointScaled = ScalePointToImage(pic, new Point(startX, startY));
+            Point endPointScaled = ScalePointToImage(pic, e.Location);
+            
+            try
+            {
+                Shape shape = CreateShape(startPointScaled, endPointScaled);
+                FinalizeShape(shape);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка малювання фігури: " + ex.Message);
+            }
+            
+            pic.Refresh();
         }
 
         private void pic_Paint_1(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            if (paint)
-            {
-                if (index == 3)
-                {
-                    g.DrawEllipse(p, cX, cY, sX, sY);
-                }
-                if (index == 4)
-                {
-                    g.DrawRectangle(p, cX, cY, sX, sY);
-                }
-                if (index == 5)
-                {
-                    g.DrawLine(p, cX, cY, x, y);
-                }
-                if (index == 6)
-                {
-                    Point[] trianglePoints = { new Point(cX + sX / 2, cY), new Point(cX, cY + sY), new Point(cX + sX, cY + sY) };
-                    g.DrawPolygon(p, trianglePoints);
-                }
-            }
+            DrawShapePreview(e);
+            
             foreach (var shape in shapes)
             {
                 shape.Draw(e.Graphics);
+            }
+        }
+
+        private void color_picker_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (color_picker.Image == null) return;
+            
+            Point point = ScalePointToImage(color_picker, e.Location);
+            Bitmap bitmap = (Bitmap)color_picker.Image;
+            
+            if (IsPointInsideBitmap(bitmap, point))
+            {
+                currentColor = bitmap.GetPixel(point.X, point.Y);
+                currentPen.Color = currentColor;
+                pic_color.BackColor = currentColor;
+            }
+        }
+
+        private bool IsPointInsideBitmap(Bitmap bitmap, Point point)
+        {
+            return point.X >= 0 && point.Y >= 0 && 
+                   point.X < bitmap.Width && 
+                   point.Y < bitmap.Height;
+        }
+
+        private void trackBar1_ValueChanged_2(object sender, EventArgs e)
+        {
+            int newWidth = trackBar1.Value;
+            currentPen.Width = newWidth;
+            erasePen.Width = newWidth;
+        }
+
+        private void btn_color_Click_1(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                currentColor = colorDialog.Color;
+                currentPen.Color = currentColor;
+                pic_color.BackColor = currentColor;
             }
         }
 
@@ -321,7 +433,8 @@ namespace paint
             g.Clear(Color.White);
             shapes.Clear();
             pic.Image = bm;
-            index = 0; pic.Refresh();
+            currentTool = DrawingTool.None;
+            pic.Refresh();
         }
 
         private void btn_back_Click(object sender, EventArgs e)
@@ -331,90 +444,57 @@ namespace paint
             this.Close();
         }
 
-        private void pic_MouseClick(object sender, MouseEventArgs e)
+        private void btn_addpic_Click(object sender, EventArgs e)
         {
-            if (index == 7)
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Point point = set_point(pic, e.Location);
-                Fill(bm, point.X, point.Y, new_color);
-                pic.Image = bm;
-            }
-            else if (index == 8 && drawingText)
+                Filter = "Зображення (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Всі файли (*.*)|*.*",
+                Title = "Виберіть зображення"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                string input = Microsoft.VisualBasic.Interaction.InputBox("������ �����:", "��������� ������", "�����");
-                if (!string.IsNullOrEmpty(input))
-                {
-                    Point point = set_point(pic, e.Location);
-                    TextShape textShape = new TextShape(input, point, currentFont, p.Color);
-                    shapes.Add(textShape); pic.Invalidate();
-                }
+                LoadImageFromFile(openFileDialog.FileName);
             }
         }
 
-        private void pic_MouseUp(object sender, MouseEventArgs e)
+        private void btn_text_Click(object sender, EventArgs e)
         {
-            paint = false;
-
-            Point startPoint = set_point(pic, new Point(cX, cY));
-            Point endPoint = set_point(pic, e.Location);
-
-            int curWidth = endPoint.X - startPoint.X;
-            int curHeight = endPoint.Y - startPoint.Y;
-
-            Shape shape = null;
-
-            try
+            textOptionsPanel.Visible = !textOptionsPanel.Visible;
+            
+            if (currentTool == DrawingTool.Text)
             {
-                if (index == 3) 
-                {
-                    Rectangle rect = new Rectangle(
-                        Math.Min(startPoint.X, endPoint.X),
-                        Math.Min(startPoint.Y, endPoint.Y),
-                        Math.Abs(curWidth),
-                        Math.Abs(curHeight)
-                    );
-                    shape = new EllipseShape(rect, p.Color, (int)p.Width);
-                }
-                else if (index == 4) 
-                {
-                    shape = new RectangleShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
-                else if (index == 5) 
-                {
-                    shape = new LineShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
-                else if (index == 6) 
-                {
-                    shape = new TriangleShape(startPoint, endPoint, p.Color, (int)p.Width);
-                }
-                if (shape != null)
-                {
-                    using (Graphics gBm = Graphics.FromImage(bm))
-                    {
-                        gBm.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                        shape.Draw(gBm);
-                    }
-
-                    pic.Image = bm;
-                }
+                currentTool = DrawingTool.None;
+                btn_text.BackColor = SystemColors.GrayText;
+                isTextModeActive = false;
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("������� ��������� ������: " + ex.Message);
+                currentTool = DrawingTool.Text;
+                btn_text.BackColor = Color.DimGray;
+                isTextModeActive = true;
             }
-            pic.Refresh();
         }
 
-        private void btn_pencil_Click_1(object sender, EventArgs e)
+        // Спрощені методи для вибору інструментів
+        private void SetDrawingTool(DrawingTool tool)
         {
-            index = 1;
+            currentTool = tool;
         }
 
-        private void btn_eraser_Click_1(object sender, EventArgs e)
-        {
-            index = 2;
-        }
+        private void btn_pencil_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Pencil);
+        private void btn_eraser_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Eraser);
+        private void btn_ellips_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Ellipse);
+        private void btn_rect_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Rectangle);
+        private void btn_line_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Line);
+        private void btn_trg_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Triangle);
+        private void btn_fill_Click_1(object sender, EventArgs e) => SetDrawingTool(DrawingTool.Fill);
+        private void btn_redo_Click(object sender, EventArgs e) { } // Заглушка для Undo/Redo
 
+        // Стилі тексту
+        private void btn_b_Click(object sender, EventArgs e) => ToggleFontStyle(FontStyle.Bold);
+        private void btn_i_Click(object sender, EventArgs e) => ToggleFontStyle(FontStyle.Italic);
+        private void btn_u_Click(object sender, EventArgs e) => ToggleFontStyle(FontStyle.Underline);
+        #endregion
     }
 }
