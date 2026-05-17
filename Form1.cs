@@ -37,7 +37,6 @@ namespace paint
         private readonly Pen erasePen;
         private DrawingTool currentTool = DrawingTool.None;
         
-        private int currentX, currentY, deltaX, deltaY, startX, startY;
         private List<Shape> shapes = new List<Shape>();
         
         private ColorDialog colorDialog = new ColorDialog();
@@ -163,35 +162,37 @@ namespace paint
             }
         }
 
-        private void DrawShapePreview(PaintEventArgs e)
+      private void DrawShapePreview(PaintEventArgs e)
         {
             if (!isDrawing) return;
             
             Graphics graphics = e.Graphics;
+            int width = previousPoint.X - startPoint.X;
+            int height = previousPoint.Y - startPoint.Y;
             
             switch (currentTool)
             {
                 case DrawingTool.Ellipse:
-                    graphics.DrawEllipse(currentPen, startX, startY, deltaX, deltaY);
+                    graphics.DrawEllipse(currentPen, startPoint.X, startPoint.Y, width, height);
                     break;
                 case DrawingTool.Rectangle:
-                    graphics.DrawRectangle(currentPen, startX, startY, deltaX, deltaY);
+                    graphics.DrawRectangle(currentPen, startPoint.X, startPoint.Y, width, height);
                     break;
                 case DrawingTool.Line:
-                    graphics.DrawLine(currentPen, startX, startY, currentX, currentY);
+                    graphics.DrawLine(currentPen, startPoint.X, startPoint.Y, previousPoint.X, previousPoint.Y);
                     break;
                 case DrawingTool.Triangle:
-                    DrawTrianglePreview(graphics);
+                    DrawTrianglePreview(graphics, width, height);
                     break;
             }
         }
 
-        private void DrawTrianglePreview(Graphics graphics)
+        private void DrawTrianglePreview(Graphics graphics, int width, int height)
         {
             Point[] trianglePoints = {
-                new Point(startX + deltaX / 2, startY),
-                new Point(startX, startY + deltaY),
-                new Point(startX + deltaX, startY + deltaY)
+                new Point(startPoint.X + width / 2, startPoint.Y),
+                new Point(startPoint.X, startPoint.Y + height),
+                new Point(startPoint.X + width, startPoint.Y + height)
             };
             graphics.DrawPolygon(currentPen, trianglePoints);
         }
@@ -310,12 +311,11 @@ namespace paint
         #endregion
 
         #region Event Handlers
-        private void pic_MouseDown(object sender, MouseEventArgs e)
+      private void pic_MouseDown(object sender, MouseEventArgs e)
         {
             isDrawing = true;
+            startPoint = e.Location;
             previousPoint = e.Location;
-            startX = e.X;
-            startY = e.Y;
         }
 
         private void pic_MouseMove(object sender, MouseEventArgs e)
@@ -323,15 +323,10 @@ namespace paint
             if (isDrawing)
             {
                 DrawWithCurrentTool(e.Location);
-                
-                currentX = e.X;
-                currentY = e.Y;
-                deltaX = e.X - startX;
-                deltaY = e.Y - startY;
+                previousPoint = e.Location; // Запам'ятовуємо поточну позицію миші
             }
             pic.Refresh();
         }
-
         private void pic_MouseClick(object sender, MouseEventArgs e)
         {
             if (currentTool == DrawingTool.Fill)
@@ -359,11 +354,11 @@ namespace paint
             }
         }
 
-        private void pic_MouseUp(object sender, MouseEventArgs e)
+      private void pic_MouseUp(object sender, MouseEventArgs e)
         {
             isDrawing = false;
             
-            Point startPointScaled = ScalePointToImage(pic, new Point(startX, startY));
+            Point startPointScaled = ScalePointToImage(pic, startPoint);
             Point endPointScaled = ScalePointToImage(pic, e.Location);
             
             try
