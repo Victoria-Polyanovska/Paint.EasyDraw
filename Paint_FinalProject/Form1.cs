@@ -6,7 +6,6 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
-
 namespace Paint_FinalProject
 {
     public partial class Form1 : Form
@@ -31,6 +30,7 @@ namespace Paint_FinalProject
         private PointF _offset = new PointF(0, 0);
 
         private HistoryManager _historyManager;
+
         public Form1(string projectName, string loadPath = null)
         {
             InitializeComponent();
@@ -75,6 +75,7 @@ namespace Paint_FinalProject
             picture.Invalidate();
         }
 
+        // ЗАРЕФАКТОРИНИЙ МЕТОД: Тепер він виконує лише високорівневу маршрутизацію завантаження
         private void LoadProjectData(string path)
         {
             try
@@ -83,33 +84,11 @@ namespace Paint_FinalProject
 
                 if (extension == ".json")
                 {
-                    string json = File.ReadAllText(path);
-                    var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-                    var project = JsonConvert.DeserializeObject<DrawingProject>(json, settings);
-
-                    if (project != null && project.Shapes != null)
-                    {
-                        _graphics.Clear(Color.White);
-                        _historyManager.ClearHistory();
-                        foreach (var shape in project.Shapes)
-                        {
-                            shape.Draw(_graphics);
-                            var command = new DrawCommand(shape, _mainBitmap, "�����������");
-                            _historyManager.ExecuteCommand(command, _graphics);
-                        }
-                    }
+                    LoadJsonProject(path);
                 }
-                else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp")
+                else if (IsRasterImageExtension(extension))
                 {
-                    using (Image img = Image.FromFile(path))
-                    {
-                        _graphics.Clear(Color.White);
-                        _graphics.DrawImage(img, 0, 0, _mainBitmap.Width, _mainBitmap.Height);
-
-                        Bitmap snapshot = new Bitmap(_mainBitmap);
-                        var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "������ ����");
-                        _historyManager.ExecuteCommand(command, _graphics);
-                    }
+                    LoadRasterImage(path);
                 }
 
                 RefreshHistoryList();
@@ -117,9 +96,49 @@ namespace Paint_FinalProject
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"�� ������� ������� ����: {ex.Message}");
+                MessageBox.Show($"Íå âäàëîñÿ â³äêðèòè ôàéë: {ex.Message}");
             }
         }
+
+        // ВИТЯГНУТИЙ МЕТОД: Відповідає тільки за роботу з JSON-файлами проєктів
+        private void LoadJsonProject(string path)
+        {
+            string json = File.ReadAllText(path);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            var project = JsonConvert.DeserializeObject<DrawingProject>(json, settings);
+
+            if (project != null && project.Shapes != null)
+            {
+                _graphics.Clear(Color.White);
+                _historyManager.ClearHistory();
+                foreach (var shape in project.Shapes)
+                {
+                    shape.Draw(_graphics);
+                    var command = new DrawCommand(shape, _mainBitmap, "Çàâàíòàæåíî");
+                    _historyManager.ExecuteCommand(command, _graphics);
+                }
+            }
+        }
+
+        // ВИТЯГНУТИЙ МЕТОД: Відповідає тільки за імпорт растрових зображень
+        private void LoadRasterImage(string path)
+        {
+            using (Image img = Image.FromFile(path))
+            {
+                _graphics.Clear(Color.White);
+                _graphics.DrawImage(img, 0, 0, _mainBitmap.Width, _mainBitmap.Height);
+
+                Bitmap snapshot = new Bitmap(_mainBitmap);
+                var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "²ìïîðò ôîòî");
+                _historyManager.ExecuteCommand(command, _graphics);
+            }
+        }
+
+        private bool IsRasterImageExtension(string extension)
+        {
+            return extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp";
+        }
+
         private void SaveProject(string filePath)
         {
             var project = new DrawingProject
@@ -139,6 +158,7 @@ namespace Paint_FinalProject
 
             File.WriteAllText(filePath, json);
         }
+
         private Font GetCurrentFont()
         {
             string fontName = comboBoxFonts.SelectedItem?.ToString() ?? "Arial";
@@ -152,6 +172,7 @@ namespace Paint_FinalProject
 
             return new Font(fontName, fontSize, style);
         }
+
         private void UpdateDrawingColor(Color newColor)
         {
             _currentColor = newColor;
@@ -161,6 +182,7 @@ namespace Paint_FinalProject
                 button_color.BackColor = newColor;
             }
         }
+
         private string ShowTextInputDialog()
         {
             Form prompt = new Form()
@@ -168,14 +190,13 @@ namespace Paint_FinalProject
                 Width = 350,
                 Height = 150,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
-                Text = "������ ����� ��� ���������",
+                Text = "Ââåä³òü òåêñò äëÿ ìàëþâàííÿ",
                 StartPosition = FormStartPosition.CenterParent,
                 MaximizeBox = false
             };
 
             TextBox textBox = new TextBox() { Left = 20, Top = 20, Width = 290 };
-
-            Button confirmation = new Button() { Text = "��", Left = 210, Width = 100, Top = 60, DialogResult = DialogResult.OK };
+            Button confirmation = new Button() { Text = "ÎÊ", Left = 210, Width = 100, Top = 60, DialogResult = DialogResult.OK };
 
             prompt.Controls.Add(textBox);
             prompt.Controls.Add(confirmation);
@@ -183,6 +204,7 @@ namespace Paint_FinalProject
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
+
         private void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             if (targetColor.ToArgb() == replacementColor.ToArgb()) return;
@@ -211,6 +233,7 @@ namespace Paint_FinalProject
                 }
             }
         }
+
         private bool ColorsMatch(Color c1, Color c2, int tolerance)
         {
             int totalDiff = Math.Abs(c1.R - c2.R) + Math.Abs(c1.G - c2.G) + Math.Abs(c1.B - c2.B);
@@ -218,15 +241,10 @@ namespace Paint_FinalProject
         }
 
         private void button_pen_Click(object sender, EventArgs e) => _currentToolIndex = 1;
-
         private void button_eraser_Click(object sender, EventArgs e) => _currentToolIndex = 2;
-
         private void button_ellipse_Click(object sender, EventArgs e) => _currentToolIndex = 3;
-
         private void button_rct_Click(object sender, EventArgs e) => _currentToolIndex = 4;
-
         private void button_line_Click(object sender, EventArgs e) => _currentToolIndex = 5;
-
         private void button_trg_Click(object sender, EventArgs e) => _currentToolIndex = 6;
 
         private void picture_MouseUp(object sender, MouseEventArgs e)
@@ -259,47 +277,66 @@ namespace Paint_FinalProject
             }
         }
 
+        // ЗАРЕФАКТОРИНИЙ МЕТОД: Позбавлений від роздутості, делегує завдання конкретним інструментам
         private void picture_MouseDown(object sender, MouseEventArgs e)
         {
             Point canvasPoint = GetAdjustedPoint(e.Location);
 
             if (_currentToolIndex == 7)
             {
-                string enteredText = ShowTextInputDialog();
-                if (!string.IsNullOrEmpty(enteredText))
-                {
-                    Font currentFont = GetCurrentFont();
-                    Shape textShape = new TextShape(canvasPoint, enteredText, currentFont, _currentColor);
-
-                    var command = new DrawCommand(textShape, _mainBitmap, "�����");
-                    _historyManager.ExecuteCommand(command, _graphics);
-
-                    RefreshHistoryList();
-                    picture.Invalidate();
-                }
-                _isDrawing = false;
+                ExecuteTextTool(canvasPoint);
                 return;
             }
 
             if (_currentToolIndex == 8)
             {
-                if (canvasPoint.X >= 0 && canvasPoint.X < _mainBitmap.Width && canvasPoint.Y >= 0 && canvasPoint.Y < _mainBitmap.Height)
-                {
-                    Color targetColor = _mainBitmap.GetPixel(canvasPoint.X, canvasPoint.Y);
-
-                    FloodFill(_mainBitmap, canvasPoint, targetColor, _currentColor);
-
-                    Bitmap snapshot = new Bitmap(_mainBitmap);
-                    var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "�������");
-                    _historyManager.ExecuteCommand(command, _graphics);
-
-                    RefreshHistoryList();
-                    picture.Invalidate();
-                }
-                _isDrawing = false;
+                ExecuteFloodFillTool(canvasPoint);
                 return;
             }
 
+            StartFreehandOrShapeDrawing(canvasPoint);
+        }
+
+        // ВИТЯГНУТИЙ МЕТОД: Логіка обробки інструменту "Текст"
+        private void ExecuteTextTool(Point canvasPoint)
+        {
+            string enteredText = ShowTextInputDialog();
+            if (!string.IsNullOrEmpty(enteredText))
+            {
+                Font currentFont = GetCurrentFont();
+                Shape textShape = new TextShape(canvasPoint, enteredText, currentFont, _currentColor);
+
+                var command = new DrawCommand(textShape, _mainBitmap, "Òåêñò");
+                _historyManager.ExecuteCommand(command, _graphics);
+
+                RefreshHistoryList();
+                picture.Invalidate();
+            }
+            _isDrawing = false;
+        }
+
+        // ВИТЯГНУТИЙ МЕТОД: Логіка обробки інструменту "Заливка"
+        private void ExecuteFloodFillTool(Point canvasPoint)
+        {
+            if (canvasPoint.X >= 0 && canvasPoint.X < _mainBitmap.Width && canvasPoint.Y >= 0 && canvasPoint.Y < _mainBitmap.Height)
+            {
+                Color targetColor = _mainBitmap.GetPixel(canvasPoint.X, canvasPoint.Y);
+
+                FloodFill(_mainBitmap, canvasPoint, targetColor, _currentColor);
+
+                Bitmap snapshot = new Bitmap(_mainBitmap);
+                var command = new DrawCommand(new ImageShape(new Point(0, 0), snapshot), _mainBitmap, "Çàëèâêà");
+                _historyManager.ExecuteCommand(command, _graphics);
+
+                RefreshHistoryList();
+                picture.Invalidate();
+            }
+            _isDrawing = false;
+        }
+
+        // ВИТЯГНУТИЙ МЕТОД: Ініціалізація малювання звичайних фігур або пензля/гумки
+        private void StartFreehandOrShapeDrawing(Point canvasPoint)
+        {
             _isDrawing = true;
             _startPoint = canvasPoint;
 
@@ -356,7 +393,7 @@ namespace Paint_FinalProject
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"������� ������ �������: {ex.Message}", "�������",
+                MessageBox.Show($"Ïîìèëêà âèáîðó êîëüîðó: {ex.Message}", "Ïîìèëêà",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -387,7 +424,6 @@ namespace Paint_FinalProject
         private void button_text_Click(object sender, EventArgs e)
         {
             _currentToolIndex = 7;
-
             panelTextOptions.Visible = !panelTextOptions.Visible;
         }
 
@@ -396,7 +432,6 @@ namespace Paint_FinalProject
             using (ColorDialog colorDialog = new ColorDialog())
             {
                 colorDialog.Color = _currentColor;
-
                 colorDialog.FullOpen = true;
 
                 if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -412,8 +447,8 @@ namespace Paint_FinalProject
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Title = "������ ��������";
-                openFileDialog.Filter = "���������� (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
+                openFileDialog.Title = "Îáåð³òü êàðòèíêó";
+                openFileDialog.Filter = "Çîáðàæåííÿ (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -431,19 +466,18 @@ namespace Paint_FinalProject
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"�������: {ex.Message}");
+                        MessageBox.Show($"Ïîìèëêà: {ex.Message}");
                     }
                 }
             }
         }
-
 
         private void button_save_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Filter = "JSON Project|*.json|PNG Image|*.png|JPEG Image|*.jpg";
-                saveFileDialog.Title = "�������� ������";
+                saveFileDialog.Title = "Çáåðåãòè ðîáîòó";
                 saveFileDialog.FileName = _projectName;
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -460,20 +494,18 @@ namespace Paint_FinalProject
                         _mainBitmap.Save(filePath);
                     }
 
-                    MessageBox.Show("��������� ������!");
+                    MessageBox.Show("Çáåðåæåíî óñï³øíî!");
                 }
             }
         }
 
         private void button_clear_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("�� ��������, �� ������ �������� ������� �� ������ ��?", "����� �������",
+            if (MessageBox.Show("Âè âïåâíåí³, ùî õî÷åòå î÷èñòèòè ïîëîòíî òà ³ñòîð³þ ä³é?", "Ïîâíà î÷чиñòêà",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 _graphics.Clear(Color.White);
-
                 _historyManager.ClearHistory();
-
                 picture.Image = _mainBitmap;
                 RefreshHistoryList();
             }
@@ -492,6 +524,7 @@ namespace Paint_FinalProject
             picture.Invalidate();
             RefreshHistoryList();
         }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == (Keys.Control | Keys.Z))
@@ -512,6 +545,7 @@ namespace Paint_FinalProject
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
         private void RefreshHistoryList()
         {
             listBoxHistory.Items.Clear();
@@ -522,19 +556,20 @@ namespace Paint_FinalProject
                 listBoxHistory.Items.Add(name);
             }
         }
+
         private string GetToolName(int index)
         {
             return index switch
             {
-                1 => "������",
-                2 => "�����",
-                3 => "����",
-                4 => "�����������",
-                5 => "˳���",
-                6 => "���������",
-                7 => "�����",
-                8 => "�������",
-                _ => "���������"
+                1 => "Îë³âåöü",
+                2 => "Ãóìêà",
+                3 => "Åë³ïñ",
+                4 => "Ïðÿìîêóòíèê",
+                5 => "Ë³í³ÿ",
+                6 => "Òðèêóòíèê",
+                7 => "Òåêñò",
+                8 => "Çàëèâêà",
+                _ => "Ìàëþâàííÿ"
             };
         }
 
@@ -553,6 +588,7 @@ namespace Paint_FinalProject
                 UpdateZoom((trackBarZoom.Value - 2) / 10.0f);
             }
         }
+
         private Point GetAdjustedPoint(Point mousePoint)
         {
             return new Point(
@@ -564,15 +600,12 @@ namespace Paint_FinalProject
         private void picture_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-
             g.Clear(Color.White);
-
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             using (var attributes = new System.Drawing.Imaging.ImageAttributes())
             {
                 attributes.SetWrapMode(System.Drawing.Drawing2D.WrapMode.Clamp);
-
                 g.ScaleTransform(_zoomFactor, _zoomFactor);
 
                 if (_mainBitmap != null)
@@ -604,7 +637,6 @@ namespace Paint_FinalProject
             }
 
             labelZoomPercent.Text = $"{(int)(_zoomFactor * 100)}%";
-
             picture.Invalidate();
         }
 
@@ -616,8 +648,8 @@ namespace Paint_FinalProject
         private void button_returntomenu_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
-                    "�� ��������, �� ������ ����������� � ������� ����? ����������� ���� ������ ���� ��������.",
-                    "����� � ����",
+                    "Âè âïåâíåí³, ùî õî÷åòå ïîâåðíóòèñÿ â ãîëîâíå ìåíþ? Íåçáåðåæåí³ çì³íè ìîæóòü áóòї âòðà÷åí³.",
+                    "Âèõ³ä ó ìåíþ",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
                 );
@@ -627,6 +659,7 @@ namespace Paint_FinalProject
                 this.Close();
             }
         }
+
         private void AddToHistory(string filePath)
         {
             try
@@ -637,14 +670,13 @@ namespace Paint_FinalProject
                     : new List<string>();
 
                 if (lines.Contains(filePath)) lines.Remove(filePath);
-
-                lines.Insert(0, filePath); 
+                lines.Insert(0, filePath);
 
                 File.WriteAllLines(historyPath, lines.Take(10));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("������� ������ �����: " + ex.Message);
+                Console.WriteLine("Ïîìèëêà çàïèñó ³ñòоð³¿: " + ex.Message);
             }
         }
     }
